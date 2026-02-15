@@ -5,26 +5,35 @@
     <vendor email="support@jakubjirak.com" url="https://jakubjirak.com">Jakub Jirak</vendor>
 
     <description><![CDATA[
-    <h1>Robot Framework IDE Plugin</h1>
-    <p>A comprehensive IDE plugin for Robot Framework with advanced testing and automation capabilities.</p>
+<h2>Robot Framework Professional</h2>
+<p>
+  The most productive way to write Robot Framework tests. Robot Framework Professional turns your JetBrains
+  IDE into a complete Robot Framework development environment with intelligent code completion, step-through
+  debugging, an interactive REPL, and built-in web inspector.
+</p>
 
-    <h2>Key Features</h2>
-    <ul>
-        <li><b>Syntax Highlighting</b> - Robot Framework-specific code highlighting</li>
-        <li><b>Code Completion</b> - Smart auto-completion for keywords and libraries</li>
-        <li><b>Code Navigation</b> - Go to Definition, Find References</li>
-        <li><b>Test Execution</b> - Run and debug tests with breakpoints</li>
-        <li><b>Documentation</b> - Inline documentation and keyword signatures</li>
-        <li><b>Web Inspector</b> - Visual element selection tool</li>
-        <li><b>Interactive REPL</b> - Test keywords interactively</li>
-    </ul>
+<h2>Key Features</h2>
+<ul>
+  <li><b>Intelligent Completion</b> — Context-aware suggestions for keywords, variables, and library imports</li>
+  <li><b>Go-To Navigation</b> — Jump to keyword definitions, find references, and view structure</li>
+  <li><b>Visual Debugger</b> — Step-through debugging with variable inspection and conditional breakpoints</li>
+  <li><b>Interactive REPL</b> — Test keywords in real time without running full test suites</li>
+  <li><b>Web Inspector</b> — Built-in browser element inspector for Selenium-based tests</li>
+  <li><b>Test Execution</b> — Run and debug tests directly from the editor with rich output</li>
+</ul>
 
-    <h2>Premium Features</h2>
-    <ul>
-        <li><b>Advanced Debugger</b> - Conditional breakpoints and advanced debugging</li>
-        <li><b>Performance Profiler</b> - Profile test execution performance</li>
-    </ul>
-    ]]></description>
+<h2>Why Robot Framework Professional?</h2>
+<p>
+  Robot Framework's plain-text syntax is easy to read but hard to edit without tooling. This plugin
+  brings full IDE intelligence to Robot Framework, making test development faster and less error-prone.
+</p>
+
+<h2>Free vs Pro</h2>
+<ul>
+  <li><b>Free:</b> Syntax highlighting, code completion, navigation, basic test execution</li>
+  <li><b>Pro:</b> Advanced debugger with conditional breakpoints, performance profiler, web inspector, interactive REPL, and parallel test execution support</li>
+</ul>
+]]></description>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
