@@ -1,0 +1,46 @@
+<templateSet group="Robot Framework">
+  <template name="test" value="*** Test Cases ***&#10;$TEST_NAME$&#10;    $KEYWORD$    $ARGS$&#10;    $END$" description="New test case" toReformat="true" toShortenFQNames="true">
+    <variable name="TEST_NAME" expression="" defaultValue="&quot;Test Name&quot;" alwaysStopAt="true" />
+    <variable name="KEYWORD" expression="" defaultValue="&quot;Log&quot;" alwaysStopAt="true" />
+    <variable name="ARGS" expression="" defaultValue="&quot;Test step&quot;" alwaysStopAt="true" />
+    <variable name="END" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="OTHER" value="true" />
+    </context>
+  </template>
+
+  <template name="keyword" value="*** Keywords ***&#10;$KEYWORD_NAME$&#10;    [Documentation]    $DOC$&#10;    [Arguments]    $ARGS$&#10;    $STEP$&#10;    $END$" description="New keyword" toReformat="true" toShortenFQNames="true">
+    <variable name="KEYWORD_NAME" expression="" defaultValue="&quot;Keyword Name&quot;" alwaysStopAt="true" />
+    <variable name="DOC" expression="" defaultValue="&quot;Keyword description&quot;" alwaysStopAt="true" />
+    <variable name="ARGS" expression="" defaultValue="&quot;\${arg}&quot;" alwaysStopAt="true" />
+    <variable name="STEP" expression="" defaultValue="&quot;Log    \${arg}&quot;" alwaysStopAt="true" />
+    <variable name="END" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="OTHER" value="true" />
+    </context>
+  </template>
+
+  <template name="for" value="FOR    \${item}    IN    @{$LIST$}&#10;    $STEP$&#10;END" description="FOR loop" toReformat="true" toShortenFQNames="true">
+    <variable name="LIST" expression="" defaultValue="&quot;items&quot;" alwaysStopAt="true" />
+    <variable name="STEP" expression="" defaultValue="&quot;Log    \${item}&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="OTHER" value="true" />
+    </context>
+  </template>
+
+  <template name="if" value="IF    $CONDITION$&#10;    $STEP$&#10;END" description="IF block" toReformat="true" toShortenFQNames="true">
+    <variable name="CONDITION" expression="" defaultValue="&quot;\${variable} == 'value'&quot;" alwaysStopAt="true" />
+    <variable name="STEP" expression="" defaultValue="&quot;Log    Condition true&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="OTHER" value="true" />
+    </context>
+  </template>
+
+  <template name="try" value="TRY&#10;    $STEP$&#10;EXCEPT&#10;    Log    Error occurred&#10;END" description="TRY-EXCEPT block" toReformat="true" toShortenFQNames="true">
+    <variable name="STEP" expression="" defaultValue="&quot;Log    Trying operation&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="OTHER" value="true" />
+    </context>
+  </template>
+</templateSet>
+

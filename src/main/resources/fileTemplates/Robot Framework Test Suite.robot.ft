@@ -1,0 +1,20 @@
+*** Settings ***
+Documentation    ${SUITE_DOCUMENTATION}
+Library          Collections
+Library          String
+
+*** Variables ***
+${VARIABLE}      value
+
+*** Test Cases ***
+Example Test
+    [Documentation]    Test case documentation
+    [Tags]    example
+    Log    Test implementation here
+
+*** Keywords ***
+Example Keyword
+    [Documentation]    Keyword documentation
+    [Arguments]    ${arg}
+    Log    ${arg}
+

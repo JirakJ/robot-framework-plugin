@@ -1,0 +1,9 @@
+*** Settings ***
+Documentation    ${RESOURCE_DOCUMENTATION}
+
+*** Keywords ***
+Example Keyword
+    [Documentation]    Reusable keyword
+    [Arguments]    ${arg}
+    Log    ${arg}
+

@@ -1,0 +1,243 @@
+<idea-plugin>
+    <id>com.jakubjirak.robotframework</id>
+    <name>Robot Framework Professional</name>
+    <vendor email="support@jakubjirak.com" url="https://jakubjirak.com">Jakub Jirak</vendor>
+
+    <description><![CDATA[
+    <h1>Robot Framework IDE Plugin</h1>
+    <p>A comprehensive IDE plugin for Robot Framework with advanced testing and automation capabilities.</p>
+
+    <h2>Key Features</h2>
+    <ul>
+        <li><b>Syntax Highlighting</b> - Robot Framework-specific code highlighting</li>
+        <li><b>Code Completion</b> - Smart auto-completion for keywords and libraries</li>
+        <li><b>Code Navigation</b> - Go to Definition, Find References</li>
+        <li><b>Test Execution</b> - Run and debug tests with breakpoints</li>
+        <li><b>Documentation</b> - Inline documentation and keyword signatures</li>
+        <li><b>Web Inspector</b> - Visual element selection tool</li>
+        <li><b>Interactive REPL</b> - Test keywords interactively</li>
+    </ul>
+
+    <h2>Premium Features</h2>
+    <ul>
+        <li><b>Advanced Debugger</b> - Conditional breakpoints and advanced debugging</li>
+        <li><b>Performance Profiler</b> - Profile test execution performance</li>
+    </ul>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Language Definition -->
+        <fileType name="Robot Framework"
+                 implementationClass="com.jakubjirak.robotframework.language.RobotFileType"
+                 fieldName="INSTANCE"
+                 language="RobotFramework"
+                 extensions="robot;resource;txt"/>
+
+        <!-- Syntax Highlighter -->
+        <lang.syntaxHighlighterFactory language="RobotFramework"
+                                      implementationClass="com.jakubjirak.robotframework.language.RobotSyntaxHighlighterFactory"/>
+
+        <!-- Parser Definition -->
+        <lang.parserDefinition language="RobotFramework"
+                              implementationClass="com.jakubjirak.robotframework.language.RobotParserDefinition"/>
+        
+        <lang.syntaxHighlighterFactory language="RobotFramework"
+                                       implementationClass="com.jakubjirak.robotframework.editor.RobotSyntaxHighlighterFactory"/>
+        
+        <lang.commenter language="RobotFramework"
+                       implementationClass="com.jakubjirak.robotframework.editor.RobotCommenter"/>
+        
+        <lang.braceMatcher language="RobotFramework"
+                          implementationClass="com.jakubjirak.robotframework.editor.RobotBraceMatcher"/>
+        
+        <!-- Code Completion -->
+        <completion.contributor language="RobotFramework"
+                               implementationClass="com.jakubjirak.robotframework.editor.RobotCompletionContributor"/>
+        
+        <!-- Documentation -->
+        <lang.documentationProvider language="RobotFramework"
+                                   implementationClass="com.jakubjirak.robotframework.editor.RobotDocumentationProvider"/>
+        
+        <!-- Code Folding -->
+        <lang.foldingBuilder language="RobotFramework"
+                            implementationClass="com.jakubjirak.robotframework.editor.RobotFoldingBuilder"/>
+        
+        <!-- Structure View -->
+        <lang.psiStructureViewFactory language="RobotFramework"
+                                     implementationClass="com.jakubjirak.robotframework.editor.RobotStructureViewFactory"/>
+
+        <!-- Breadcrumbs -->
+        <breadcrumbsInfoProvider implementation="com.jakubjirak.robotframework.editor.RobotBreadcrumbsProvider"/>
+
+        <!-- Auto-indent -->
+        <lineIndentProvider implementation="com.jakubjirak.robotframework.editor.RobotLineIndentProvider"/>
+
+        <!-- Annotators -->
+        <annotator language="RobotFramework"
+                   implementationClass="com.jakubjirak.robotframework.editor.RobotEmbeddedArgumentAnnotator"/>
+        <annotator language="RobotFramework"
+                   implementationClass="com.jakubjirak.robotframework.editor.RobotSyntaxErrorAnnotator"/>
+        <annotator language="RobotFramework"
+                   implementationClass="com.jakubjirak.robotframework.editor.RobotUndefinedKeywordAnnotator"/>
+        <annotator language="RobotFramework"
+                   implementationClass="com.jakubjirak.robotframework.editor.RobotDuplicateKeywordAnnotator"/>
+        <annotator language="RobotFramework"
+                   implementationClass="com.jakubjirak.robotframework.editor.RobotUndefinedVariableAnnotator"/>
+        <annotator language="RobotFramework"
+                   implementationClass="com.jakubjirak.robotframework.editor.RobotMissingResourceAnnotator"/>
+
+        <!-- Go to Declaration -->
+        <gotoDeclarationHandler implementation="com.jakubjirak.robotframework.navigation.RobotGotoDeclarationHandler"/>
+
+        <!-- Code Inspections -->
+        <localInspection language="RobotFramework"
+                        groupName="Robot Framework"
+                        displayName="Test name too long"
+                        enabledByDefault="true"
+                        level="WARNING"
+                        implementationClass="com.jakubjirak.robotframework.inspection.RobotLongTestNameInspection"/>
+        <localInspection language="RobotFramework"
+                        groupName="Robot Framework"
+                        displayName="Empty test case"
+                        enabledByDefault="true"
+                        level="WARNING"
+                        implementationClass="com.jakubjirak.robotframework.inspection.RobotEmptyTestCaseInspection"/>
+
+        <!-- Live Templates -->
+        <defaultLiveTemplates file="/liveTemplates/RobotFramework.xml"/>
+
+        <!-- Documentation Provider -->
+        <lang.documentationProvider language="RobotFramework"
+                                   implementationClass="com.jakubjirak.robotframework.editor.RobotDocumentationProvider"/>
+
+        <!-- Rename Refactoring -->
+        <renameHandler implementation="com.intellij.refactoring.rename.PsiElementRenameHandler" order="first"/>
+        <renamePsiElementProcessor implementation="com.jakubjirak.robotframework.refactoring.RobotKeywordRenameProcessor"/>
+
+        <!-- Icon Provider -->
+        <iconProvider implementation="com.jakubjirak.robotframework.editor.RobotIconProvider"/>
+
+        <!-- Color Settings -->
+        <colorSettingsPage implementation="com.jakubjirak.robotframework.settings.RobotColorSettingsPage"/>
+
+        <!-- Parameter Hints -->
+        <codeInsight.inlayProvider language="RobotFramework"
+                                   implementationClass="com.jakubjirak.robotframework.editor.RobotParameterHintsProvider"/>
+
+        <!-- Spellchecking -->
+        <spellchecker.support language="RobotFramework"
+                             implementationClass="com.jakubjirak.robotframework.editor.RobotSpellcheckingStrategy"/>
+
+        <!-- Find Usages -->
+        <lang.findUsagesProvider language="RobotFramework"
+                                implementationClass="com.jakubjirak.robotframework.editor.RobotFindUsagesProvider"/>
+        
+        <!-- Reference -->
+        <psi.referenceContributor language="RobotFramework"
+                                 implementation="com.jakubjirak.robotframework.language.RobotReferenceContributor"/>
+        
+        <!-- Test Execution -->
+        <configurationType implementation="com.jakubjirak.robotframework.execution.RobotRunConfigurationType"/>
+        <programRunner implementation="com.jakubjirak.robotframework.execution.RobotProgramRunner"/>
+        
+        <!-- Tool Windows -->
+        <toolWindow id="Robot Framework"
+                   anchor="bottom"
+                   icon="/icons/robot_13x13.svg"
+                   factoryClass="com.jakubjirak.robotframework.ui.RobotToolWindowFactory"/>
+        
+        <toolWindow id="Web Inspector"
+                   anchor="right"
+                   icon="/icons/inspector_13x13.svg"
+                   factoryClass="com.jakubjirak.robotframework.ui.WebInspectorToolWindowFactory"/>
+        
+        <!-- Premium Features Notification -->
+        <applicationService serviceImplementation="com.jakubjirak.robotframework.premium.LicenseManager"/>
+        <projectService serviceImplementation="com.jakubjirak.robotframework.premium.PremiumFeatureService"/>
+        
+        <!-- Project Service -->
+        <projectService serviceImplementation="com.jakubjirak.robotframework.core.RobotProjectService"/>
+    </extensions>
+
+    <actions>
+        <group id="RobotFramework.Menu" text="Robot Framework" description="Robot Framework actions">
+            <add-to-group group-id="MainMenu" anchor="before" relative-to-action="HelpMenu"/>
+            
+            <action id="RobotFramework.RunTest"
+                    class="com.jakubjirak.robotframework.execution.actions.RunTestAction"
+                    text="Run Test"
+                    description="Run Robot Framework test"
+                    icon="AllIcons.Actions.Execute">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift F10"/>
+            </action>
+            
+            <action id="RobotFramework.DebugTest"
+                    class="com.jakubjirak.robotframework.execution.actions.DebugTestAction"
+                    text="Debug Test"
+                    description="Debug Robot Framework test"
+                    icon="AllIcons.Actions.StartDebugger">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift F9"/>
+            </action>
+            
+            <separator/>
+            
+            <action id="RobotFramework.OpenREPL"
+                    class="com.jakubjirak.robotframework.ui.actions.OpenReplAction"
+                    text="Open Interactive REPL"
+                    description="Open Robot Framework interactive console"
+                    icon="AllIcons.Nodes.Console"/>
+            
+            <action id="RobotFramework.OpenWebInspector"
+                    class="com.jakubjirak.robotframework.ui.actions.OpenWebInspectorAction"
+                    text="Open Web Inspector"
+                    description="Open Web Inspector for locator generation"
+                    icon="AllIcons.General.InspectionsEye"/>
+            
+            <separator/>
+            
+            <!-- Premium Features (with upgrade prompt) -->
+            <action id="RobotFramework.AdvancedDebugger"
+                    class="com.jakubjirak.robotframework.premium.actions.AdvancedDebuggerAction"
+                    text="Advanced Debugger (Premium)"
+                    description="Open advanced debugger with conditional breakpoints"
+                    icon="AllIcons.Toolwindows.ToolWindowDebugger"/>
+            
+            <action id="RobotFramework.PerformanceProfiler"
+                    class="com.jakubjirak.robotframework.premium.actions.PerformanceProfilerAction"
+                    text="Performance Profiler (Premium)"
+                    description="Profile test execution performance"
+                    icon="AllIcons.Actions.ProfileCPU"/>
+            
+            <separator/>
+            
+            <action id="RobotFramework.UpgradeToPremium"
+                    class="com.jakubjirak.robotframework.premium.actions.UpgradeAction"
+                    text="Upgrade to Premium"
+                    description="Unlock premium features"
+                    icon="AllIcons.Toolwindows.ToolWindowFavorites"/>
+
+            <action id="RobotFramework.Settings"
+                    class="com.jakubjirak.robotframework.ui.actions.SettingsAction"
+                    text="Settings"
+                    description="Configure Robot Framework plugin"
+                    icon="AllIcons.General.Settings"/>
+        </group>
+
+        <!-- Editor context menu -->
+        <group id="RobotFramework.EditorContextMenu">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <action id="RobotFramework.GenerateKeyword"
+                    class="com.jakubjirak.robotframework.editor.actions.GenerateKeywordAction"
+                    text="Generate Keyword"
+                    description="Generate new Robot Framework keyword"
+                    icon="AllIcons.Actions.IntentionBulb"/>
+        </group>
+    </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="com.jakubjirak.robotframework.core.RobotProjectListener"/>
+    </extensions>
+</idea-plugin>
