@@ -163,9 +163,13 @@
         <!-- Color Settings -->
         <colorSettingsPage implementation="com.jakubjirak.robotframework.settings.RobotColorSettingsPage"/>
 
-        <!-- Parameter Hints -->
-        <codeInsight.inlayProvider language="RobotFramework"
-                                   implementationClass="com.jakubjirak.robotframework.editor.RobotParameterHintsProvider"/>
+        <!-- Parameter Hints (declarative API) -->
+        <codeInsight.inlayHintsProvider language="RobotFramework"
+                                        providerId="robot.parameter.hints"
+                                        isEnabledByDefault="true"
+                                        group="PARAMETERS_GROUP"
+                                        description="Shows parameter names for Robot Framework keyword arguments"
+                                        implementationClass="com.jakubjirak.robotframework.editor.RobotParameterHintsProvider"/>
 
         <!-- Spellchecking -->
         <spellchecker.support language="RobotFramework"
