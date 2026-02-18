@@ -29,11 +29,12 @@ class RobotParameterHintsProvider : InlayHintsProvider {
                     val argText = sibling.text.trim()
                     if ("=" !in argText && argText.isNotEmpty()) {
                         val hintText = "arg$argIndex:"
+                        @Suppress("DEPRECATION")
                         sink.addPresentation(
                             InlineInlayPosition(sibling.textRange.startOffset, false),
                             null,
                             null,
-                            HintFormat.default
+                            true
                         ) {
                             text(hintText)
                         }
