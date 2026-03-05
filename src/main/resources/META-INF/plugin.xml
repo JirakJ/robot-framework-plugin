@@ -4,8 +4,7 @@
     <name>Robot Framework Professional</name>
     <vendor email="support@jakubjirak.com" url="https://jakubjirak.com">Jakub Jirak</vendor>
 
-    <description><![CDATA[
-<h2>Robot Framework Professional — Full IDE Intelligence for Robot Framework</h2>
+    <description><![CDATA[<h2>Robot Framework Professional — Full IDE Intelligence for Robot Framework</h2>
 
 <p>
   Turn your JetBrains IDE into a complete Robot Framework development environment.
@@ -34,21 +33,15 @@
 <h3>Execution and Debugging</h3>
 <ul>
   <li><b>Test Execution</b> — Run tests directly from the editor with rich output</li>
-  <li><b>Step-Through Debugger</b> — Breakpoints, variable inspection, and conditional breakpoints (Pro)</li>
-  <li><b>Interactive REPL</b> — Test keywords in real time without running full suites (Pro)</li>
-  <li><b>Performance Profiler</b> — Find slow keywords and optimize execution time (Pro)</li>
+  <li><b>Step-Through Debugger</b> — Breakpoints, variable inspection, and conditional breakpoints</li>
+  <li><b>Interactive REPL</b> — Test keywords in real time without running full suites</li>
+  <li><b>Performance Profiler</b> — Find slow keywords and optimize execution time</li>
 </ul>
 
 <h3>Web Testing</h3>
 <ul>
-  <li><b>Web Inspector</b> — Built-in browser element inspector for locator generation (Pro)</li>
+  <li><b>Web Inspector</b> — Built-in browser element inspector for locator generation</li>
   <li><b>SeleniumLibrary Support</b> — Full completion and navigation for SeleniumLibrary keywords</li>
-</ul>
-
-<h3>Pricing</h3>
-<ul>
-  <li><b>Free</b> — Syntax highlighting, code completion, navigation, inspections, basic test execution</li>
-  <li><b>Pro</b> — Advanced debugger, performance profiler, web inspector, interactive REPL, parallel execution</li>
 </ul>
 
 <h3>Requirements</h3>
@@ -62,8 +55,7 @@
   <li>Documentation: <a href="https://jakubjirak.com">jakubjirak.com</a></li>
   <li>Issues: <a href="https://github.com/JirakJ/robot-framework-plugin">GitHub</a></li>
   <li>Email: support@jakubjirak.com</li>
-</ul>
-    ]]></description>
+</ul>]]></description>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
@@ -204,6 +196,9 @@
         
         <!-- Project Service -->
         <projectService serviceImplementation="com.jakubjirak.robotframework.core.RobotProjectService"/>
+    
+        <notificationGroup id="Robot Framework Professional Feedback" displayType="BALLOON"/>
+        <projectActivity implementation="com.jakubjirak.robotframework.feedback.FeedbackNotifier"/>
     </extensions>
 
     <actions>
