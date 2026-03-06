@@ -1,10 +1,9 @@
 <idea-plugin>
     <id>com.jakubjirak.robotframework</id>
-    <product-descriptor code="PROBOTFRAMEWORK" release-date="20260215" release-version="20262" optional="true"/>
-    <name>Robot Framework Professional</name>
+    <name>Robot Framework</name>
     <vendor email="support@jakubjirak.com" url="https://jakubjirak.com">Jakub Jirak</vendor>
 
-    <description><![CDATA[<h2>Robot Framework Professional — Full IDE Intelligence for Robot Framework</h2>
+    <description><![CDATA[<h2>Robot Framework — Full IDE Intelligence for Robot Framework</h2>
 
 <p>
   Turn your JetBrains IDE into a complete Robot Framework development environment.
@@ -190,14 +189,10 @@
                    icon="/icons/inspector_13x13.svg"
                    factoryClass="com.jakubjirak.robotframework.ui.WebInspectorToolWindowFactory"/>
         
-        <!-- Premium Features Notification -->
-        <applicationService serviceImplementation="com.jakubjirak.robotframework.premium.LicenseManager"/>
-        <projectService serviceImplementation="com.jakubjirak.robotframework.premium.PremiumFeatureService"/>
-        
         <!-- Project Service -->
         <projectService serviceImplementation="com.jakubjirak.robotframework.core.RobotProjectService"/>
     
-        <notificationGroup id="Robot Framework Professional Feedback" displayType="BALLOON"/>
+        <notificationGroup id="Robot Framework Feedback" displayType="BALLOON"/>
         <projectActivity implementation="com.jakubjirak.robotframework.feedback.FeedbackNotifier"/>
     </extensions>
 
@@ -237,27 +232,6 @@
             
             <separator/>
             
-            <!-- Premium Features (with upgrade prompt) -->
-            <action id="RobotFramework.AdvancedDebugger"
-                    class="com.jakubjirak.robotframework.premium.actions.AdvancedDebuggerAction"
-                    text="Advanced Debugger (Premium)"
-                    description="Open advanced debugger with conditional breakpoints"
-                    icon="AllIcons.Toolwindows.ToolWindowDebugger"/>
-            
-            <action id="RobotFramework.PerformanceProfiler"
-                    class="com.jakubjirak.robotframework.premium.actions.PerformanceProfilerAction"
-                    text="Performance Profiler (Premium)"
-                    description="Profile test execution performance"
-                    icon="AllIcons.Actions.ProfileCPU"/>
-            
-            <separator/>
-            
-            <action id="RobotFramework.UpgradeToPremium"
-                    class="com.jakubjirak.robotframework.premium.actions.UpgradeAction"
-                    text="Upgrade to Premium"
-                    description="Unlock premium features"
-                    icon="AllIcons.Toolwindows.ToolWindowFavorites"/>
-
             <action id="RobotFramework.Settings"
                     class="com.jakubjirak.robotframework.ui.actions.SettingsAction"
                     text="Settings"

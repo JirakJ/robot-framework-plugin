@@ -1,4 +1,4 @@
-# Robot Framework Professional
+# Robot Framework
 
 Full-featured Robot Framework language support for JetBrains IDEs with syntax highlighting, code completion, navigation, inspections, test execution, and debugging capabilities.
 
@@ -25,7 +25,7 @@ Full-featured Robot Framework language support for JetBrains IDEs with syntax hi
 
 ## Installation
 
-1. **JetBrains Marketplace**: Settings → Plugins → Marketplace → Search "Robot Framework Professional"
+1. **JetBrains Marketplace**: Settings → Plugins → Marketplace → Search "Robot Framework"
 2. **Manual**: Download from [Releases](https://github.com/JirakJ/robot-framework-plugin/releases) → Settings → Plugins → ⚙️ → Install from disk
 
 ## Requirements
@@ -36,7 +36,7 @@ Full-featured Robot Framework language support for JetBrains IDEs with syntax hi
 
 ## Configuration
 
-Settings → Tools → Robot Framework Professional
+Settings → Tools → Robot Framework
 
 Customize syntax highlighting colors via Settings → Editor → Color Scheme → Robot Framework.
 
