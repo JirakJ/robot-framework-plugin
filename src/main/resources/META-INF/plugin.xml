@@ -192,6 +192,14 @@
         <!-- Project Service -->
         <projectService serviceImplementation="com.jakubjirak.robotframework.core.RobotProjectService"/>
     
+        <projectService serviceImplementation="com.jakubjirak.robotframework.settings.RobotSettings"/>
+
+        <projectConfigurable
+            parentId="tools"
+            instance="com.jakubjirak.robotframework.settings.RobotSettingsConfigurable"
+            id="robot.framework.settings"
+            displayName="Robot Framework"/>
+
         <notificationGroup id="Robot Framework Feedback" displayType="BALLOON"/>
         <projectActivity implementation="com.jakubjirak.robotframework.feedback.FeedbackNotifier"/>
     </extensions>
