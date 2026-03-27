@@ -2,6 +2,11 @@
 
 All notable changes to the Robot Framework plugin will be documented in this file.
 
+## [2026.3.6] - 2026-03-27
+
+### Added
+- **Freemium licensing** — Added `product-descriptor` for JetBrains Marketplace freemium model (code: `PROBOTFRAMEWORK`)
+
 ## [1.0.0] - 2024-01-15
 
 ### Added
