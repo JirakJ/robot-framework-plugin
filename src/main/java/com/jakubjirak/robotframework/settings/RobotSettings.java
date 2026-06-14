@@ -26,6 +26,8 @@ public class RobotSettings implements PersistentStateComponent<RobotSettings.Sta
         public String outputDirectory = "";
         public String browserName = "chrome";
         public boolean enableAutoImport = true;
+        public int formatterIndentSize = 4;
+        public boolean formatterNormalizeHeaders = true;
     }
 
     @Override
@@ -76,6 +78,22 @@ public class RobotSettings implements PersistentStateComponent<RobotSettings.Sta
 
     public void setEnableAutoImport(boolean value) {
         myState.enableAutoImport = value;
+    }
+
+    public int getFormatterIndentSize() {
+        return myState.formatterIndentSize;
+    }
+
+    public void setFormatterIndentSize(int value) {
+        myState.formatterIndentSize = Math.max(2, value);
+    }
+
+    public boolean isFormatterNormalizeHeaders() {
+        return myState.formatterNormalizeHeaders;
+    }
+
+    public void setFormatterNormalizeHeaders(boolean value) {
+        myState.formatterNormalizeHeaders = value;
     }
 
     public static RobotSettings getInstance(@NotNull Project project) {

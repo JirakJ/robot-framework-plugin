@@ -2,6 +2,17 @@
 
 All notable changes to the Robot Framework plugin will be documented in this file.
 
+## [2026.4.0] - 2026-06-14
+
+### Added
+- **Robot file formatter** — Reformat the current suite via *Robot Framework → Format Robot File* (`Ctrl+Alt+Shift+R`): canonicalizes section headers (`*** test cases ***` → `*** Test Cases ***`), expands tabs to spaces, strips trailing whitespace, collapses blank-line runs, and guarantees a blank line before each section header. Formatting is idempotent.
+- **Code-quality inspections** — Duplicate test-case name (error), tab character used for separation (warning, with quick fix), trailing whitespace (weak warning, with quick fix), unresolved `TODO`/`FIXME`/`XXX` markers (weak warning), and unused suite variables (off by default).
+- **Quick fixes** — *Convert tabs to spaces* and *Remove trailing whitespace*.
+- **Formatter settings** — Indent size and header normalization under Settings → Tools → Robot Framework.
+
+### Technical
+- New dependency-free, fully unit-tested engines `RobotFormatter` and `RobotCodeAnalyzer` (32 new tests); inspections delegate to the analyzer via `checkFile` so detection logic stays IDE-independent.
+
 ## [2026.3.6] - 2026-03-27
 
 ### Added

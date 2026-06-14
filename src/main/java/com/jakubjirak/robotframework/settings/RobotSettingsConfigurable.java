@@ -30,6 +30,8 @@ public class RobotSettingsConfigurable implements SearchableConfigurable {
     private JBTextField outputDirectoryField;
     private JBTextField browserNameField;
     private JBCheckBox enableAutoImportCheckBox;
+    private JBTextField formatterIndentSizeField;
+    private JBCheckBox formatterNormalizeHeadersCheckBox;
     private JPanel myPanel;
 
     public RobotSettingsConfigurable(@NotNull Project project) {
@@ -53,6 +55,8 @@ public class RobotSettingsConfigurable implements SearchableConfigurable {
         outputDirectoryField = new JBTextField();
         browserNameField = new JBTextField();
         enableAutoImportCheckBox = new JBCheckBox("Enable auto-import for libraries");
+        formatterIndentSizeField = new JBTextField();
+        formatterNormalizeHeadersCheckBox = new JBCheckBox("Normalize section headers (e.g. *** test cases *** → *** Test Cases ***)");
 
         myPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(new JBLabel("Python interpreter path:"), interpreterPathField, 1, false)
@@ -60,6 +64,10 @@ public class RobotSettingsConfigurable implements SearchableConfigurable {
                 .addLabeledComponent(new JBLabel("Output directory:"), outputDirectoryField, 1, false)
                 .addLabeledComponent(new JBLabel("Web inspector browser:"), browserNameField, 1, false)
                 .addComponent(enableAutoImportCheckBox, 1)
+                .addSeparator()
+                .addComponent(new JBLabel("Formatter"))
+                .addLabeledComponent(new JBLabel("Indent size (spaces):"), formatterIndentSizeField, 1, false)
+                .addComponent(formatterNormalizeHeadersCheckBox, 1)
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
 
@@ -74,7 +82,17 @@ public class RobotSettingsConfigurable implements SearchableConfigurable {
                 !Objects.equals(robotArgsField.getText(), settings.getRobotArgs()) ||
                 !Objects.equals(outputDirectoryField.getText(), settings.getOutputDirectory()) ||
                 !Objects.equals(browserNameField.getText(), settings.getBrowserName()) ||
-                enableAutoImportCheckBox.isSelected() != settings.isEnableAutoImport();
+                enableAutoImportCheckBox.isSelected() != settings.isEnableAutoImport() ||
+                parseIndentSize() != settings.getFormatterIndentSize() ||
+                formatterNormalizeHeadersCheckBox.isSelected() != settings.isFormatterNormalizeHeaders();
+    }
+
+    private int parseIndentSize() {
+        try {
+            return Math.max(2, Integer.parseInt(formatterIndentSizeField.getText().trim()));
+        } catch (NumberFormatException ex) {
+            return RobotSettings.getInstance(project).getFormatterIndentSize();
+        }
     }
 
     @Override
@@ -85,6 +103,8 @@ public class RobotSettingsConfigurable implements SearchableConfigurable {
         settings.setOutputDirectory(outputDirectoryField.getText());
         settings.setBrowserName(browserNameField.getText());
         settings.setEnableAutoImport(enableAutoImportCheckBox.isSelected());
+        settings.setFormatterIndentSize(parseIndentSize());
+        settings.setFormatterNormalizeHeaders(formatterNormalizeHeadersCheckBox.isSelected());
     }
 
     @Override
@@ -95,5 +115,7 @@ public class RobotSettingsConfigurable implements SearchableConfigurable {
         outputDirectoryField.setText(settings.getOutputDirectory());
         browserNameField.setText(settings.getBrowserName());
         enableAutoImportCheckBox.setSelected(settings.isEnableAutoImport());
+        formatterIndentSizeField.setText(String.valueOf(settings.getFormatterIndentSize()));
+        formatterNormalizeHeadersCheckBox.setSelected(settings.isFormatterNormalizeHeaders());
     }
 }

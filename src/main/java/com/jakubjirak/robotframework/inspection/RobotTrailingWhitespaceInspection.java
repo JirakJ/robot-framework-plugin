@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) 2026 Jakub Jirák. All rights reserved.
+ * Licensed under the terms of the project license.
+ */
+package com.jakubjirak.robotframework.inspection;
+
+import com.intellij.codeInspection.LocalQuickFix;
+import com.intellij.codeInspection.ProblemHighlightType;
+import com.jakubjirak.robotframework.analysis.RobotFinding;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * Flags trailing whitespace, which can turn into significant (empty) cells in
+ * Robot Framework and produces noisy diffs.
+ */
+public class RobotTrailingWhitespaceInspection extends AbstractRobotAnalyzerInspection {
+
+    @Override
+    protected RobotFinding.Category category() {
+        return RobotFinding.Category.TRAILING_WHITESPACE;
+    }
+
+    @Override
+    protected ProblemHighlightType highlightType() {
+        return ProblemHighlightType.GENERIC_ERROR_OR_WARNING;
+    }
+
+    @Override
+    protected LocalQuickFix @NotNull [] fixesFor(@NotNull RobotFinding finding) {
+        return new LocalQuickFix[]{new RobotDeleteRangeFix("Remove trailing whitespace")};
+    }
+}
