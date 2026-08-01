@@ -8,7 +8,7 @@
 |-------------|----------------------------------------|
 | **Name**    | Robot Framework Professional           |
 | **Plugin ID** | `com.jakubjirak.robotframework`     |
-| **Version** | 2026.2.3                               |
+| **Version** | 2026.5.0                               |
 | **Category** | Test Automation / Languages & Frameworks |
 | **Tags**    | Robot Framework, Test Automation, RPA, REPL, Debugging |
 
@@ -32,10 +32,18 @@
 
 ### ✨ Key Features
 
+#### 🤖 Robot Framework 7.4 Syntax
+
+- 🧩 **GROUP blocks** (RF 7.2) — highlighting, folding, completion, live template, and END matching
+- 🏷️ **Variable type conversion** (RF 7.3) — `${amount: int}`, `@{ids: list[int]}`, unions and `Literal[...]` highlighted, completed, and validated
+- 🔐 **Secret variables** (RF 7.4) — completion, live template, and a check that rejects literal secrets
+- 📦 **VAR statement** (RF 7.0/7.1) — completion for every scope including `SUITES`
+- 🧭 **Migration fixes** — one-click replacements for `[Return]`, `Force Tags`, `WITH NAME`, singular section headers, and the deprecated loop keywords
+
 #### 🆓 Free Tier
 
-- 🎨 **Syntax Highlighting** — Keywords, variables, section headers, control flow, and comments with full semantic coloring
-- 🧠 **Smart Code Completion** — RF 7+ keywords, BuiltIn, Collections, and String library completions
+- 🎨 **Syntax Highlighting** — Markers, typed variables, tags, section headers, and comments with full semantic coloring
+- 🧠 **Smart Code Completion** — RF 7.x control structures, conversion types, BuiltIn, Collections, and String library completions
 - 🔗 **Go to Declaration** — Navigate to keyword definitions with normalized matching
 - 🔍 **Find References** — Locate all usages of keywords and variables across your project
 - 📖 **Inline Documentation** — Hover documentation with parameter hints
@@ -138,7 +146,7 @@
 | Rider                        | ✅          |
 | RubyMine                     | ✅          |
 
-**Minimum Build:** 232 (IntelliJ Platform 2023.2+)
+**Minimum Build:** 242 (IntelliJ Platform 2024.2+)
 
 ---
 

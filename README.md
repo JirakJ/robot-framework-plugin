@@ -46,7 +46,7 @@ Tracks the syntax of **Robot Framework 7.4**.
 
 ## Requirements
 
-- IntelliJ IDEA 2023.2+ (build 232+)
+- IntelliJ IDEA 2024.2+ (build 242+)
 - Any JetBrains IDE (IntelliJ, WebStorm, PyCharm, etc.)
 - Robot Framework installed in your project environment
 
