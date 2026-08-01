@@ -2,70 +2,88 @@
 
 Marketplace listing assets for the **Robot Framework Professional** plugin.
 
-All shots are captured against the ready-made sample project in
-[`sample-project/`](sample-project), which is crafted so every new feature lights
-up without any extra setup.
+All shots are built from the sample suites in [`sample-project/`](sample-project),
+which are crafted so the advertised features light up without any extra setup.
 
 ---
 
-## Capture environment
+## How the shots are produced
 
-- **IDE:** IntelliJ IDEA (Community is fine) 2024.3+
-- **Theme:** IntelliJ Light, Light editor color scheme
-- **Window size:** 1600×1000 logical pixels
-- **Output:** `docs/screenshots/NN-name.png` (PNG, ≥ 1280×800 — Marketplace minimum)
-- **Zoom:** default font size; hide the navigation bar and minimap for a clean frame
+```bash
+python3 docs/screenshots/src/render.py
+```
 
-Open `sample-project/` as a project (or copy the two `.robot` files into any
-project that has this plugin installed) before capturing.
+[`src/render.py`](src/render.py) renders each shot as HTML and captures it with
+headless Chrome at 1440×900 @2× → **2880×1800 PNG**. Two things keep the pictures
+honest instead of aspirational:
+
+- The token colours in the renderer are the `TextAttributesKey` fallbacks declared
+  in `editor/RobotSyntaxHighlighter`, resolved against the **IntelliJ Light**
+  scheme — so section headers are the olive `METADATA` colour, control structures
+  and BuiltIn keywords are `KEYWORD` blue, variables are `INSTANCE_FIELD` purple,
+  and suite settings such as `Library` are plain text, exactly as the plugin
+  renders them today.
+- The inspection titles and messages are copied verbatim from
+  `analysis/RobotCodeAnalyzer`.
+
+`SampleProjectTest` asserts that the sample suites keep producing exactly the
+findings the screenshots show, so a behaviour change breaks the build rather than
+silently making the listing wrong.
+
+**Known gaps visible in the shots** (candidates for a follow-up release):
+suite settings in `*** Settings ***` are not highlighted, and a variable's type
+annotation renders in the variable colour because `ROBOT_VARIABLE_TYPE` falls back
+to `CLASS_REFERENCE`, which the IntelliJ Light scheme leaves unstyled.
+
+Re-capture any shot as a live IDE screenshot (`./gradlew runIde`) whenever an
+exact pixel match matters; framing and content already follow the shipped
+behaviour.
 
 ---
 
 ## Screenshots
 
-### 1. `01-code-inspections.png` — Code-quality inspections
-**File:** `quality_demo.robot`
+### 1. `01-code-inspections.png` — Robot Framework 7.4 inspections
+**File:** `rf74_migration.robot`
 
-**What to capture:** the editor showing all four new inspections firing at once:
-- **Duplicate test case name** — red error under the second `User Can Log In` (line 17).
-- **Tab character used for separation** — warning on the tab-indented lines (22–23).
-- **Trailing whitespace** — weak warning at the end of line 19.
-- **Unresolved TODO/FIXME marker** — weak warnings on the `# TODO` (line 13) and `# FIXME` (line 23) comments.
+Six findings at once: `WITH NAME` (RF 6.0) and `Force Tags` (RF 6.0) as
+deprecations, a literal value for a `Secret` variable (RF 7.4) and a malformed
+`list[int` type (RF 7.3) as errors, a `VAR` created in SUITE scope without a
+value (RF 7.4), and a `GROUP` (RF 7.2) that is never closed with `END`. The
+tooltip shows the Secret message.
 
-Hover one finding so its tooltip/description is visible, and make sure the
-right-hand error stripe shows the mixed severities.
+### 2. `02-quick-fixes.png` — One-click migration
+**File:** `rf74_migration.robot`
 
-### 2. `02-quick-fixes.png` — One-click quick fixes
-**File:** `quality_demo.robot`
-
-**What to capture:** the cursor on a tab-indented line with the intention popup
-(`Alt+Enter`) open, showing **Convert tabs to spaces**. Capturing the
-**Remove trailing whitespace** quick fix on line 19 also works.
+The intention popup on `[Return]` offering **Replace with 'RETURN'**. The same
+mechanism backs `Force Tags` → `Test Tags`, `WITH NAME` → `AS`, singular section
+headers, and the deprecated loop keywords.
 
 ### 3. `03-formatter-before-after.png` — Robot file formatter
 **File:** `messy_suite.robot`
 
-**What to capture:** a before/after pair (split or two stacked frames). On the
-left, the messy file; on the right, the result after **Robot Framework → Format
-Robot File** (`Ctrl+Alt+Shift+R`). Highlight that lower-case headers became
-`*** Settings ***` / `*** Test Cases ***` / `*** Keywords ***`, tabs became
-spaces, blank-line runs collapsed, and a blank line was inserted before each
-section header. See [`messy_suite.formatted.robot`](sample-project/messy_suite.formatted.robot)
+Before/after pair for **Robot Framework → Format Robot File**
+(`Ctrl+Alt+Shift+R`): canonical section headers, tabs → spaces, collapsed
+blank-line runs. See [`messy_suite.formatted.robot`](sample-project/messy_suite.formatted.robot)
 for the exact expected output.
 
 ### 4. `04-settings.png` — Formatter settings
 **Where:** Settings → Tools → Robot Framework
 
-**What to capture:** the settings page with the new **Formatter** section visible
-— *Indent size (spaces)* and *Normalize section headers* — alongside the existing
-interpreter/execution options.
+Indent size and header normalization alongside the interpreter options.
 
-### 5. `05-inspection-settings.png` — Inspection profile (optional)
-**Where:** Settings → Editor → Inspections → Robot Framework
+### 5. `05-rf74-syntax.png` — Robot Framework 7.4 syntax
+**File:** `rf74_showcase.robot`
 
-**What to capture:** the Robot Framework inspection group listing the new
-inspections (Duplicate test case name, Tab character, Trailing whitespace,
-TODO/FIXME marker, Unused suite variable) so users can see they are configurable.
+A suite using `GROUP` (7.2), typed variables (7.3), a `Secret` variable (7.4),
+`VAR` with the `SUITES` scope (7.1), `WHILE` limits, an inline `IF`, and
+`[Setup]` on a user keyword (7.0).
+
+### 6. `06-type-completion.png` — Conversion type completion
+**File:** `rf74_showcase.robot`
+
+Typing a colon inside a variable offers the conversion types Robot Framework 7.3
+understands, including the 7.4 `Secret` type.
 
 ---
 
@@ -75,12 +93,8 @@ TODO/FIXME marker, Unused suite variable) so users can see they are configurable
 - [x] `02-quick-fixes.png`
 - [x] `03-formatter-before-after.png`
 - [x] `04-settings.png`
-- [ ] `05-inspection-settings.png` (optional)
-
-> The committed PNGs are IntelliJ-Light-themed renders (2880×1800) of the
-> features against the sample project. Re-capture them as live IDE screenshots
-> any time for an exact pixel match; the framing and content already match the
-> shipped behaviour.
+- [x] `05-rf74-syntax.png`
+- [x] `06-type-completion.png`
 
 Upload the PNGs to the JetBrains Marketplace listing (Edit Plugin → Media).
 Marketplace media must be uploaded manually — the publish token only ships the

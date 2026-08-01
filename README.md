@@ -72,7 +72,11 @@ Open a `.robot`/`.resource` file → **Robot Framework → Format Robot File** (
 
 ## Screenshots
 
-| Code-quality inspections | Quick fixes |
+| Robot Framework 7.4 syntax | Conversion type completion |
+| --- | --- |
+| ![RF 7.4 syntax](docs/screenshots/05-rf74-syntax.png) | ![Type completion](docs/screenshots/06-type-completion.png) |
+
+| Inspections | One-click migration |
 | --- | --- |
 | ![Inspections](docs/screenshots/01-code-inspections.png) | ![Quick fixes](docs/screenshots/02-quick-fixes.png) |
 
@@ -80,7 +84,9 @@ Open a `.robot`/`.resource` file → **Robot Framework → Format Robot File** (
 | --- | --- |
 | ![Formatter](docs/screenshots/03-formatter-before-after.png) | ![Settings](docs/screenshots/04-settings.png) |
 
-The capture kit (sample project + per-shot guide) lives in [`docs/screenshots`](docs/screenshots/SCREENSHOTS.md).
+The capture kit (sample project, renderer and per-shot guide) lives in
+[`docs/screenshots`](docs/screenshots/SCREENSHOTS.md); regenerate with
+`python3 docs/screenshots/src/render.py`.
 
 ### Use the Web Inspector
 Menu → Robot Framework → **Open Web Inspector** to launch the visual element selection tool for identifying web elements.
