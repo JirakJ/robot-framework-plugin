@@ -5,7 +5,7 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.AttributesDescriptor;
 import com.intellij.openapi.options.colors.ColorDescriptor;
 import com.intellij.openapi.options.colors.ColorSettingsPage;
-import com.jakubjirak.robotframework.language.RobotSyntaxHighlighter;
+import com.jakubjirak.robotframework.editor.RobotSyntaxHighlighter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,20 +14,22 @@ import java.util.Map;
 
 /**
  * Color settings page for Robot Framework syntax highlighting.
- * Allows users to customize colors in Settings > Editor > Color Scheme > Robot Framework.
+ * Allows users to customize colors in Settings &gt; Editor &gt; Color Scheme &gt; Robot Framework.
  */
 public class RobotColorSettingsPage implements ColorSettingsPage {
 
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
-            new AttributesDescriptor("Section Header", RobotSyntaxHighlighter.SECTION_HEADER),
+            new AttributesDescriptor("Section header", RobotSyntaxHighlighter.SECTION_HEADER),
             new AttributesDescriptor("Comment", RobotSyntaxHighlighter.COMMENT),
-            new AttributesDescriptor("Keyword", RobotSyntaxHighlighter.KEYWORD),
+            new AttributesDescriptor("Built-in keyword", RobotSyntaxHighlighter.KEYWORD),
+            new AttributesDescriptor("Control structure", RobotSyntaxHighlighter.CONTROL_FLOW),
             new AttributesDescriptor("Setting", RobotSyntaxHighlighter.SETTING),
             new AttributesDescriptor("Variable", RobotSyntaxHighlighter.VARIABLE),
+            new AttributesDescriptor("Variable type", RobotSyntaxHighlighter.VARIABLE_TYPE),
+            new AttributesDescriptor("Embedded argument", RobotSyntaxHighlighter.EMBEDDED_ARGUMENT),
+            new AttributesDescriptor("Tag", RobotSyntaxHighlighter.TAG),
             new AttributesDescriptor("String", RobotSyntaxHighlighter.STRING),
-            new AttributesDescriptor("Number", RobotSyntaxHighlighter.NUMBER),
-            new AttributesDescriptor("Operator", RobotSyntaxHighlighter.OPERATOR),
-            new AttributesDescriptor("Parameter", RobotSyntaxHighlighter.PARAMETER),
+            new AttributesDescriptor("Identifier", RobotSyntaxHighlighter.IDENTIFIER),
     };
 
     @Nullable
@@ -45,30 +47,39 @@ public class RobotColorSettingsPage implements ColorSettingsPage {
     @NotNull
     @Override
     public String getDemoText() {
-        return "# Robot Framework Example\n" +
-               "*** Settings ***\n" +
-               "Library    SeleniumLibrary\n" +
-               "Resource   common.resource\n" +
-               "\n" +
-               "*** Variables ***\n" +
-               "${USERNAME}    admin\n" +
-               "${PASSWORD}    secret123\n" +
-               "@{BROWSERS}    chrome    firefox\n" +
-               "\n" +
-               "*** Test Cases ***\n" +
-               "Login Test\n" +
-               "    [Documentation]    Test user login\n" +
-               "    [Tags]    smoke    login\n" +
-               "    Open Browser    https://example.com    chrome\n" +
-               "    Input Text    id:username    ${USERNAME}\n" +
-               "    Input Text    id:password    ${PASSWORD}\n" +
-               "    Click Button    id:login\n" +
-               "    \n" +
-               "*** Keywords ***\n" +
-               "Custom Keyword With ${arg}\n" +
-               "    [Arguments]    ${value}\n" +
-               "    Log    ${arg} = ${value}\n" +
-               "    Should Be Equal    ${value}    expected\n";
+        return "# Robot Framework 7.4 example\n"
+                + "*** Settings ***\n"
+                + "Library      SeleniumLibrary    AS    Browser\n"
+                + "Resource     common.resource\n"
+                + "Test Tags    smoke\n"
+                + "\n"
+                + "*** Variables ***\n"
+                + "${USERNAME}              admin\n"
+                + "${RETRIES: int}          3\n"
+                + "@{BROWSERS: str}         chrome    firefox\n"
+                + "${PASSWORD: Secret}      %{APP_PASSWORD}\n"
+                + "\n"
+                + "*** Test Cases ***\n"
+                + "Login Test\n"
+                + "    [Documentation]    Test user login\n"
+                + "    [Tags]    login    -smoke\n"
+                + "    GROUP    Sign in\n"
+                + "        Open Browser    https://example.com    chrome\n"
+                + "        Input Text      id:username    ${USERNAME}\n"
+                + "    END\n"
+                + "    WHILE    ${RETRIES} > 0    limit=10x\n"
+                + "        VAR    ${RETRIES}    ${{ $RETRIES - 1 }}\n"
+                + "    END\n"
+                + "\n"
+                + "*** Keywords ***\n"
+                + "Move ${distance: int} Meters\n"
+                + "    [Arguments]    ${speed: float}=1.0\n"
+                + "    TRY\n"
+                + "        Should Be Equal    ${distance}    10\n"
+                + "    EXCEPT    AS    ${error}\n"
+                + "        Log    ${error}\n"
+                + "    END\n"
+                + "    RETURN    ${distance}\n";
     }
 
     @Nullable
@@ -95,4 +106,3 @@ public class RobotColorSettingsPage implements ColorSettingsPage {
         return "Robot Framework";
     }
 }
-

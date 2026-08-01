@@ -19,6 +19,16 @@ public class RobotDocumentationProvider extends AbstractDocumentationProvider {
             return null;
         }
 
+        // Control structures document themselves.
+        if (RobotTokenTypes.CONTROL_FLOW.contains(element.getNode().getElementType())) {
+            String marker = element.getText().trim().toUpperCase(java.util.Locale.ROOT)
+                    .replaceAll("\\s+", " ");
+            String doc = getControlStructureDocumentation(marker);
+            if (doc != null) {
+                return formatDocumentation(marker, doc);
+            }
+        }
+
         // Check if this is a keyword
         if (element.getNode().getElementType() == RobotTokenTypes.KEYWORD ||
             element.getNode().getElementType() == RobotTokenTypes.IDENTIFIER) {
@@ -73,10 +83,8 @@ public class RobotDocumentationProvider extends AbstractDocumentationProvider {
                 continue;
             }
 
-            if (inKeywordsSection && (
-                child.getNode().getElementType() == RobotTokenTypes.SETTINGS_HEADER ||
-                child.getNode().getElementType() == RobotTokenTypes.VARIABLES_HEADER ||
-                child.getNode().getElementType() == RobotTokenTypes.TEST_CASES_HEADER)) {
+            if (inKeywordsSection
+                    && RobotTokenTypes.SECTION_HEADERS.contains(child.getNode().getElementType())) {
                 break;
             }
 
@@ -103,6 +111,61 @@ public class RobotDocumentationProvider extends AbstractDocumentationProvider {
 
     private String normalizeKeywordName(String name) {
         return name.toLowerCase().replace(" ", "").replace("_", "").replace("-", "");
+    }
+
+    /** Short reference for the control structures available up to Robot Framework 7.4. */
+    @Nullable
+    private String getControlStructureDocumentation(String marker) {
+        switch (marker) {
+            case "IF":
+                return "Runs the following steps when the condition is true. Written on a single row "
+                        + "(<code>IF&nbsp;&nbsp;&nbsp;&nbsp;condition&nbsp;&nbsp;&nbsp;&nbsp;Keyword</code>) "
+                        + "it is an inline IF and needs no END. Since Robot Framework 7.0.";
+            case "ELSE IF":
+                return "Alternative condition of an IF block.";
+            case "ELSE":
+                return "Steps to run when no IF or ELSE IF condition matched.";
+            case "FOR":
+                return "Loops over values. Separators: IN, IN RANGE, IN ENUMERATE and IN ZIP. "
+                        + "IN ZIP takes an explicit <code>mode=</code> since Robot Framework 7.0.";
+            case "WHILE":
+                return "Loops while the condition is true. Accepts <code>limit=</code> (a count such as "
+                        + "<code>10x</code> or a time such as <code>1 minute</code>), <code>on_limit=</code> "
+                        + "and <code>on_limit_message=</code>.";
+            case "GROUP":
+                return "Groups related steps under an optional name so logs and reports stay readable. "
+                        + "Groups nest and share the enclosing variable scope. Closed with END. "
+                        + "Added in Robot Framework 7.2.";
+            case "TRY":
+                return "Starts error handling. Followed by EXCEPT, ELSE and FINALLY branches.";
+            case "EXCEPT":
+                return "Handles a failure raised in the TRY block. Supports matching patterns and "
+                        + "<code>AS&nbsp;&nbsp;&nbsp;&nbsp;${error}</code> to capture the message.";
+            case "FINALLY":
+                return "Steps that always run, whether or not the TRY block failed.";
+            case "END":
+                return "Closes an IF, FOR, WHILE, TRY or GROUP block.";
+            case "BREAK":
+                return "Leaves the innermost FOR or WHILE loop.";
+            case "CONTINUE":
+                return "Jumps to the next iteration of the innermost FOR or WHILE loop.";
+            case "RETURN":
+                return "Returns from a user keyword, optionally with values. Replaces the deprecated "
+                        + "<code>[Return]</code> setting.";
+            case "VAR":
+                return "Creates a variable. <code>scope=</code> accepts LOCAL, TEST, TASK, SUITE, "
+                        + "SUITES (Robot Framework 7.1) and GLOBAL; <code>separator=</code> controls how "
+                        + "multiple values are joined. Types can be declared as "
+                        + "<code>VAR&nbsp;&nbsp;&nbsp;&nbsp;${count: int}&nbsp;&nbsp;&nbsp;&nbsp;42</code> "
+                        + "since Robot Framework 7.3. Added in Robot Framework 7.0.";
+            case "IN":
+            case "IN RANGE":
+            case "IN ENUMERATE":
+            case "IN ZIP":
+                return "FOR loop separator.";
+            default:
+                return null;
+        }
     }
 
     private String getBuiltInKeywordDocumentation(String keywordName) {

@@ -19,19 +19,20 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Base class for inspections that surface a single {@link RobotFinding.Category}
- * produced by the pure {@link RobotCodeAnalyzer}.
+ * Base class for inspections that surface one or more {@link RobotFinding.Category}
+ * values produced by the pure {@link RobotCodeAnalyzer}.
  *
  * <p>Running the analysis once per file (via {@link #checkFile}) keeps the
  * detection logic IDE-independent and fully unit testable while still presenting
- * each category as its own configurable inspection.</p>
+ * each concern as its own configurable inspection.</p>
  */
 public abstract class AbstractRobotAnalyzerInspection extends LocalInspectionTool {
 
-    /** The finding category this inspection reports. */
-    protected abstract RobotFinding.Category category();
+    /** The finding categories this inspection reports. */
+    protected abstract Set<RobotFinding.Category> categories();
 
     /** Highlight type; resolves severity from the configured inspection level. */
     protected ProblemHighlightType highlightType() {
@@ -58,9 +59,10 @@ public abstract class AbstractRobotAnalyzerInspection extends LocalInspectionToo
 
         int fileLength = text.length();
         List<ProblemDescriptor> problems = new ArrayList<>();
+        Set<RobotFinding.Category> categories = categories();
 
         for (RobotFinding finding : RobotCodeAnalyzer.analyze(text)) {
-            if (finding.getCategory() != category()) {
+            if (!categories.contains(finding.getCategory())) {
                 continue;
             }
             int start = Math.max(0, Math.min(finding.getStartOffset(), fileLength));

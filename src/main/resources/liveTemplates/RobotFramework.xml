@@ -42,5 +42,48 @@
       <option name="OTHER" value="true" />
     </context>
   </template>
+
+  <template name="group" value="GROUP    $NAME$&#10;    $STEP$&#10;END" description="GROUP block (Robot Framework 7.2+)" toReformat="true" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="&quot;Group name&quot;" alwaysStopAt="true" />
+    <variable name="STEP" expression="" defaultValue="&quot;Log    Grouped step&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="OTHER" value="true" />
+    </context>
+  </template>
+
+  <template name="var" value="VAR    \${$NAME$}    $VALUE$    scope=$SCOPE$" description="VAR statement (Robot Framework 7.0+)" toReformat="true" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="&quot;name&quot;" alwaysStopAt="true" />
+    <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true" />
+    <variable name="SCOPE" expression="enum(&quot;LOCAL&quot;,&quot;TEST&quot;,&quot;TASK&quot;,&quot;SUITE&quot;,&quot;SUITES&quot;,&quot;GLOBAL&quot;)" defaultValue="&quot;TEST&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="OTHER" value="true" />
+    </context>
+  </template>
+
+  <template name="while" value="WHILE    $CONDITION$    limit=$LIMIT$&#10;    $STEP$&#10;END" description="WHILE loop with limit" toReformat="true" toShortenFQNames="true">
+    <variable name="CONDITION" expression="" defaultValue="&quot;\${counter} &lt; 10&quot;" alwaysStopAt="true" />
+    <variable name="LIMIT" expression="" defaultValue="&quot;10x&quot;" alwaysStopAt="true" />
+    <variable name="STEP" expression="" defaultValue="&quot;Log    Looping&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="OTHER" value="true" />
+    </context>
+  </template>
+
+  <template name="typedvar" value="\${$NAME$: $TYPE$}    $VALUE$" description="Typed variable (Robot Framework 7.3+)" toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="&quot;NAME&quot;" alwaysStopAt="true" />
+    <variable name="TYPE" expression="enum(&quot;int&quot;,&quot;float&quot;,&quot;bool&quot;,&quot;str&quot;,&quot;date&quot;,&quot;datetime&quot;,&quot;list[int]&quot;,&quot;Secret&quot;)" defaultValue="&quot;int&quot;" alwaysStopAt="true" />
+    <variable name="VALUE" expression="" defaultValue="&quot;0&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="OTHER" value="true" />
+    </context>
+  </template>
+
+  <template name="secret" value="\${$NAME$: Secret}    %{$ENV$}" description="Secret variable (Robot Framework 7.4+)" toReformat="false" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="&quot;PASSWORD&quot;" alwaysStopAt="true" />
+    <variable name="ENV" expression="" defaultValue="&quot;APP_PASSWORD&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="OTHER" value="true" />
+    </context>
+  </template>
 </templateSet>
 

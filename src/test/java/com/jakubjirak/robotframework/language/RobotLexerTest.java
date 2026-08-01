@@ -225,51 +225,177 @@ class RobotLexerTest {
         }
 
         @Test
-        @DisplayName("*** produces three SECTION_HEADER tokens")
+        @DisplayName("bare *** is one unnamed SECTION_HEADER token")
         void tripleStars() {
             List<IElementType> tokens = tokenize("***");
-            // Each * is tokenized individually as SECTION_HEADER
-            long sectionCount = tokens.stream()
-                .filter(t -> t == RobotTokenTypes.SECTION_HEADER)
-                .count();
-            assertEquals(3, sectionCount);
+            assertEquals(1, tokens.size());
+            assertEquals(RobotTokenTypes.SECTION_HEADER, tokens.get(0));
         }
 
         @Test
-        @DisplayName("*** Settings *** tokenizes stars and word separately")
-        void settingsHeaderTokenSequence() {
+        @DisplayName("*** Settings *** is a single SETTINGS_HEADER token")
+        void settingsHeader() {
             List<IElementType> tokens = tokenize("*** Settings ***");
-            // The lexer processes each * individually; the word becomes IDENTIFIER
-            assertTrue(tokens.contains(RobotTokenTypes.SECTION_HEADER),
-                "Should contain SECTION_HEADER tokens for asterisks");
-            assertTrue(tokens.contains(RobotTokenTypes.WHITE_SPACE),
-                "Should contain WHITE_SPACE between parts");
+            assertEquals(1, tokens.size());
+            assertEquals(RobotTokenTypes.SETTINGS_HEADER, tokens.get(0));
+            assertEquals(List.of("*** Settings ***"), tokenTexts("*** Settings ***"));
         }
 
         @Test
-        @DisplayName("*** produces only SECTION_HEADER and no other types")
-        void starsOnlySectionHeaders() {
-            List<IElementType> tokens = tokenize("***");
-            for (IElementType token : tokens) {
-                assertEquals(RobotTokenTypes.SECTION_HEADER, token);
-            }
+        @DisplayName("*** Variables *** is a single VARIABLES_HEADER token")
+        void variablesHeader() {
+            assertEquals(List.of(RobotTokenTypes.VARIABLES_HEADER), tokenize("*** Variables ***"));
         }
 
         @Test
-        @DisplayName("section header word is recognized as IDENTIFIER")
+        @DisplayName("*** Test Cases *** is a single TEST_CASES_HEADER token")
+        void testCasesHeader() {
+            assertEquals(List.of(RobotTokenTypes.TEST_CASES_HEADER), tokenize("*** Test Cases ***"));
+        }
+
+        @Test
+        @DisplayName("*** Tasks *** reuses TEST_CASES_HEADER")
+        void tasksHeader() {
+            assertEquals(List.of(RobotTokenTypes.TEST_CASES_HEADER), tokenize("*** Tasks ***"));
+        }
+
+        @Test
+        @DisplayName("*** Keywords *** is a single KEYWORDS_HEADER token")
+        void keywordsHeader() {
+            assertEquals(List.of(RobotTokenTypes.KEYWORDS_HEADER), tokenize("*** Keywords ***"));
+        }
+
+        @Test
+        @DisplayName("*** Comments *** is a single COMMENTS_HEADER token")
+        void commentsHeader() {
+            assertEquals(List.of(RobotTokenTypes.COMMENTS_HEADER), tokenize("*** Comments ***"));
+        }
+
+        @Test
+        @DisplayName("singular headers are recognized too")
+        void singularHeader() {
+            assertEquals(List.of(RobotTokenTypes.TEST_CASES_HEADER), tokenize("*** Test Case ***"));
+        }
+
+        @Test
+        @DisplayName("header spelling is case insensitive")
+        void caseInsensitiveHeader() {
+            assertEquals(List.of(RobotTokenTypes.KEYWORDS_HEADER), tokenize("*** keywords ***"));
+        }
+
+        @Test
+        @DisplayName("unknown header name falls back to SECTION_HEADER")
+        void unknownHeader() {
+            assertEquals(List.of(RobotTokenTypes.SECTION_HEADER), tokenize("*** Whatever ***"));
+        }
+
+        @Test
+        @DisplayName("an asterisk that is not at line start is data")
+        void asteriskInsideLine() {
+            List<IElementType> tokens = tokenize("Log    a*b");
+            assertFalse(tokens.contains(RobotTokenTypes.SECTION_HEADER));
+        }
+
+        @Test
+        @DisplayName("section header word alone is an IDENTIFIER")
         void sectionWordIsIdentifier() {
-            // "Settings" alone (not a built-in keyword) becomes IDENTIFIER
             List<IElementType> tokens = tokenize("Settings");
             assertEquals(1, tokens.size());
             assertEquals(RobotTokenTypes.IDENTIFIER, tokens.get(0));
         }
+    }
+
+    @Nested
+    @DisplayName("Robot Framework 7.x Syntax")
+    class ModernSyntaxTests {
+        @Test
+        @DisplayName("GROUP is a control structure marker (RF 7.2)")
+        void groupMarker() {
+            assertEquals(List.of(RobotTokenTypes.GROUP_KEYWORD), tokenize("GROUP"));
+        }
 
         @Test
-        @DisplayName("*** Test Cases *** contains correct token count")
-        void testCasesTokenCount() {
-            List<IElementType> tokens = tokenize("*** Test Cases ***");
-            // *,*,*, ,Test, ,Cases, ,*,*,*
-            assertTrue(tokens.size() >= 5, "Should have at least 5 tokens");
+        @DisplayName("ELSE IF is one token")
+        void elseIfIsOneToken() {
+            assertEquals(List.of("ELSE IF"), tokenTexts("ELSE IF"));
+            assertEquals(List.of(RobotTokenTypes.ELSE_IF_KEYWORD), tokenize("ELSE IF"));
+        }
+
+        @Test
+        @DisplayName("IN ENUMERATE and IN ZIP are single tokens")
+        void multiWordForSeparators() {
+            assertEquals(List.of(RobotTokenTypes.IN_ENUMERATE_KEYWORD), tokenize("IN ENUMERATE"));
+            assertEquals(List.of(RobotTokenTypes.IN_ZIP_KEYWORD), tokenize("IN ZIP"));
+            assertEquals(List.of(RobotTokenTypes.IN_RANGE_KEYWORD), tokenize("IN RANGE"));
+        }
+
+        @Test
+        @DisplayName("IN followed by an unrelated word stays a single IN token")
+        void inNotExtended() {
+            List<String> texts = tokenTexts("IN @{items}");
+            assertEquals("IN", texts.get(0));
+        }
+
+        @Test
+        @DisplayName("typed variable is a single VARIABLE token (RF 7.3)")
+        void typedVariable() {
+            assertEquals(List.of("${amount: list[int]}"), tokenTexts("${amount: list[int]}"));
+            assertEquals(List.of(RobotTokenTypes.VARIABLE), tokenize("${amount: list[int]}"));
+        }
+
+        @Test
+        @DisplayName("Comments section content is lexed as comment")
+        void commentsSectionIsComment() {
+            String input = "*** Comments ***\nthis is ignored data\n*** Settings ***\nLibrary    X";
+            List<IElementType> tokens = tokenize(input);
+            assertEquals(RobotTokenTypes.COMMENTS_HEADER, tokens.get(0));
+            assertEquals(RobotTokenTypes.COMMENT, tokens.get(2));
+            assertTrue(tokens.contains(RobotTokenTypes.SETTINGS_HEADER),
+                "the Settings header must end the comments section");
+        }
+
+        @Test
+        @DisplayName("comments-section state survives a restart at the same offset")
+        void commentsSectionState() {
+            String input = "*** Comments ***\nignored";
+            lexer.start(input, 0, input.length(), 0);
+            while (lexer.getTokenType() != null
+                    && lexer.getTokenType() != RobotTokenTypes.WHITE_SPACE) {
+                lexer.advance();
+            }
+            int resumeOffset = lexer.getTokenEnd();
+            int resumeState = lexer.getState();
+
+            RobotLexer resumed = new RobotLexer();
+            resumed.start(input, resumeOffset, input.length(), resumeState);
+            assertEquals(RobotTokenTypes.COMMENT, resumed.getTokenType(),
+                "resuming inside a Comments section must keep lexing comments");
+        }
+    }
+
+    @Nested
+    @DisplayName("Token Ranges")
+    class TokenRangeTests {
+        @Test
+        @DisplayName("tokens carry their own start and end offsets")
+        void tokenOffsets() {
+            String input = "Log    ${x}";
+            assertEquals(List.of("Log", "    ", "${x}"), tokenTexts(input));
+        }
+
+        @Test
+        @DisplayName("token ranges are contiguous and cover the whole buffer")
+        void contiguousRanges() {
+            String input = "*** Test Cases ***\nName\n    Log    hi\n";
+            lexer.start(input, 0, input.length(), 0);
+            int expectedStart = 0;
+            while (lexer.getTokenType() != null) {
+                assertEquals(expectedStart, lexer.getTokenStart());
+                assertTrue(lexer.getTokenEnd() > lexer.getTokenStart(), "tokens must not be empty");
+                expectedStart = lexer.getTokenEnd();
+                lexer.advance();
+            }
+            assertEquals(input.length(), expectedStart);
         }
     }
 

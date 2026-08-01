@@ -11,9 +11,21 @@
   web inspector — everything you need to write, run, and debug Robot Framework tests.
 </p>
 
+<h3>Robot Framework 7.4 Syntax</h3>
+<ul>
+  <li><b>GROUP blocks</b> (RF 7.2) — highlighting, folding, completion, live template and END matching</li>
+  <li><b>Variable type conversion</b> (RF 7.3) — <code>${amount: int}</code>, <code>@{ids: list[int]}</code> and
+      <code>${dir: Literal["UP", "DOWN"]}</code> are highlighted, completed and validated</li>
+  <li><b>Secret variables</b> (RF 7.4) — completion, live template and a check that rejects literal secrets</li>
+  <li><b>VAR statement</b> (RF 7.0/7.1) — completion for every scope including SUITES</li>
+  <li><b>Inline IF, [Setup] on user keywords, -tag removal, WHILE limits</b> (RF 7.0) — understood by the editor and the inspections</li>
+  <li><b>Migration help</b> — one-click fixes for <code>[Return]</code>, <code>Force Tags</code>, <code>WITH NAME</code>,
+      singular section headers and the deprecated loop keywords</li>
+</ul>
+
 <h3>Editing and Navigation</h3>
 <ul>
-  <li><b>Syntax Highlighting</b> — Full support for Robot Framework 7+ keywords, variables, and sections</li>
+  <li><b>Syntax Highlighting</b> — Full support for Robot Framework 7.4 markers, typed variables, tags and sections</li>
   <li><b>Code Completion</b> — Context-aware suggestions for keywords, variables, and library imports</li>
   <li><b>Go-To Declaration</b> — Jump to keyword definitions and find references across files</li>
   <li><b>Rename Refactoring</b> — Safely rename keywords across all project files</li>
@@ -61,7 +73,7 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
 
-    <product-descriptor code="PROBOTFRAMEWORK" release-date="20260614" release-version="20264" optional="true"/>
+    <product-descriptor code="PROBOTFRAMEWORK" release-date="20260801" release-version="20265" optional="true"/>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Language Definition -->
@@ -69,19 +81,16 @@
                  implementationClass="com.jakubjirak.robotframework.language.RobotFileType"
                  fieldName="INSTANCE"
                  language="RobotFramework"
-                 extensions="robot;resource;txt"/>
-
-        <!-- Syntax Highlighter -->
-        <lang.syntaxHighlighterFactory language="RobotFramework"
-                                      implementationClass="com.jakubjirak.robotframework.language.RobotSyntaxHighlighterFactory"/>
+                 extensions="robot;resource"/>
 
         <!-- Parser Definition -->
         <lang.parserDefinition language="RobotFramework"
                               implementationClass="com.jakubjirak.robotframework.language.RobotParserDefinition"/>
-        
+
+        <!-- Syntax Highlighter -->
         <lang.syntaxHighlighterFactory language="RobotFramework"
                                        implementationClass="com.jakubjirak.robotframework.editor.RobotSyntaxHighlighterFactory"/>
-        
+
         <lang.commenter language="RobotFramework"
                        implementationClass="com.jakubjirak.robotframework.editor.RobotCommenter"/>
         
@@ -114,7 +123,7 @@
         <annotator language="RobotFramework"
                    implementationClass="com.jakubjirak.robotframework.editor.RobotEmbeddedArgumentAnnotator"/>
         <annotator language="RobotFramework"
-                   implementationClass="com.jakubjirak.robotframework.editor.RobotSyntaxErrorAnnotator"/>
+                   implementationClass="com.jakubjirak.robotframework.editor.RobotVariableTypeAnnotator"/>
         <annotator language="RobotFramework"
                    implementationClass="com.jakubjirak.robotframework.editor.RobotUndefinedKeywordAnnotator"/>
         <annotator language="RobotFramework"
@@ -170,13 +179,39 @@
                         enabledByDefault="false"
                         level="WARNING"
                         implementationClass="com.jakubjirak.robotframework.inspection.RobotUnusedVariableInspection"/>
+        <localInspection language="RobotFramework"
+                        groupName="Robot Framework"
+                        displayName="Deprecated Robot Framework syntax"
+                        enabledByDefault="true"
+                        level="WARNING"
+                        implementationClass="com.jakubjirak.robotframework.inspection.RobotDeprecatedSyntaxInspection"/>
+        <localInspection language="RobotFramework"
+                        groupName="Robot Framework"
+                        displayName="Unbalanced IF/FOR/WHILE/TRY/GROUP block"
+                        enabledByDefault="true"
+                        level="ERROR"
+                        implementationClass="com.jakubjirak.robotframework.inspection.RobotBlockStructureInspection"/>
+        <localInspection language="RobotFramework"
+                        groupName="Robot Framework"
+                        displayName="Malformed variable type"
+                        enabledByDefault="true"
+                        level="ERROR"
+                        implementationClass="com.jakubjirak.robotframework.inspection.RobotVariableTypeInspection"/>
+        <localInspection language="RobotFramework"
+                        groupName="Robot Framework"
+                        displayName="Literal value for a Secret variable"
+                        enabledByDefault="true"
+                        level="ERROR"
+                        implementationClass="com.jakubjirak.robotframework.inspection.RobotSecretVariableInspection"/>
+        <localInspection language="RobotFramework"
+                        groupName="Robot Framework"
+                        displayName="Data before the first section header"
+                        enabledByDefault="true"
+                        level="WARNING"
+                        implementationClass="com.jakubjirak.robotframework.inspection.RobotContentOutsideSectionInspection"/>
 
         <!-- Live Templates -->
         <defaultLiveTemplates file="/liveTemplates/RobotFramework.xml"/>
-
-        <!-- Documentation Provider -->
-        <lang.documentationProvider language="RobotFramework"
-                                   implementationClass="com.jakubjirak.robotframework.editor.RobotDocumentationProvider"/>
 
         <!-- Rename Refactoring -->
         <renameHandler implementation="com.intellij.refactoring.rename.PsiElementRenameHandler" order="first"/>
@@ -312,6 +347,27 @@
     </extensions>
 
     <change-notes><![CDATA[
+        <h3>2026.5.0 — Robot Framework 7.4 Syntax</h3>
+        <ul>
+            <li><b>GROUP blocks (RF 7.2)</b> — highlighting, folding, completion, live template and END matching</li>
+            <li><b>Variable type conversion (RF 7.3)</b> — <code>${amount: int}</code>, <code>@{ids: list[int]}</code> and
+                <code>${mode: Literal["UP", "DOWN"]}</code> are highlighted, completed and validated</li>
+            <li><b>Secret variables (RF 7.4)</b> — completion, live template and an inspection that rejects literal secrets</li>
+            <li><b>VAR scopes (RF 7.0/7.1)</b> — completion for LOCAL/TEST/TASK/SUITE/SUITES/GLOBAL plus a warning when a
+                non-local VAR is created without a value (deprecated in RF 7.4)</li>
+            <li><b>Deprecated syntax inspection</b> — <code>[Return]</code>, <code>Force Tags</code>, <code>WITH NAME</code>,
+                singular section headers, <code>Exit For Loop</code> and friends, <code>FOR IN ZIP</code> without
+                <code>mode=</code>, literal <code>-tag</code> in Test Tags — each with a one-click fix where the migration is mechanical</li>
+            <li><b>Block structure inspection</b> — unclosed IF/FOR/WHILE/TRY/GROUP and orphan END, with inline IF handled correctly</li>
+            <li><b>Fixed section header parsing</b> — <code>*** Settings ***</code> and friends are now recognized as whole
+                headers, which repairs highlighting, folding, structure view, completion and navigation</li>
+            <li><b>Tasks and Comments sections</b> — <code>*** Tasks ***</code> behaves like Test Cases, and
+                <code>*** Comments ***</code> content is greyed out as data Robot Framework ignores</li>
+            <li><b>Empty test case detection rewritten</b> — now text-based and reliable, with a real "Add No Operation" fix</li>
+            <li><b>.txt files are no longer claimed</b> — Robot Framework dropped the plain-text format, so the plugin now
+                registers only <code>.robot</code> and <code>.resource</code></li>
+        </ul>
+
         <h3>2026.4.0 — Code Quality &amp; Formatting</h3>
         <ul>
             <li><b>Robot file formatter</b> — Reformat a suite with Ctrl+Alt+Shift+R: canonical section headers, tabs → spaces, trimmed trailing whitespace, and normalized blank lines (idempotent)</li>

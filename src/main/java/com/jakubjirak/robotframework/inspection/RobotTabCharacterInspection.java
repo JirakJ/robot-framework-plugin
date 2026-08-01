@@ -8,6 +8,8 @@ import com.intellij.codeInspection.LocalQuickFix;
 import com.jakubjirak.robotframework.analysis.RobotFinding;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
+
 /**
  * Flags tab characters used for cell separation, which Robot Framework collapses
  * to a single separator and frequently breaks alignment.
@@ -15,8 +17,8 @@ import org.jetbrains.annotations.NotNull;
 public class RobotTabCharacterInspection extends AbstractRobotAnalyzerInspection {
 
     @Override
-    protected RobotFinding.Category category() {
-        return RobotFinding.Category.TAB_INDENTATION;
+    protected Set<RobotFinding.Category> categories() {
+        return Set.of(RobotFinding.Category.TAB_INDENTATION);
     }
 
     @Override

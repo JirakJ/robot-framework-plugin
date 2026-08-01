@@ -9,6 +9,8 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.jakubjirak.robotframework.analysis.RobotFinding;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
+
 /**
  * Flags trailing whitespace, which can turn into significant (empty) cells in
  * Robot Framework and produces noisy diffs.
@@ -16,8 +18,8 @@ import org.jetbrains.annotations.NotNull;
 public class RobotTrailingWhitespaceInspection extends AbstractRobotAnalyzerInspection {
 
     @Override
-    protected RobotFinding.Category category() {
-        return RobotFinding.Category.TRAILING_WHITESPACE;
+    protected Set<RobotFinding.Category> categories() {
+        return Set.of(RobotFinding.Category.TRAILING_WHITESPACE);
     }
 
     @Override

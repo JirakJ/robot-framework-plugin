@@ -21,7 +21,35 @@ public final class RobotFinding {
         TRAILING_WHITESPACE,
         DUPLICATE_TEST_NAME,
         TODO_COMMENT,
-        UNUSED_VARIABLE
+        UNUSED_VARIABLE,
+        /** Setting replaced by newer syntax, e.g. {@code [Return]} → {@code RETURN}. */
+        DEPRECATED_SETTING,
+        /** BuiltIn keyword replaced by a control structure, e.g. {@code Exit For Loop} → {@code BREAK}. */
+        DEPRECATED_KEYWORD,
+        /** Singular section header such as {@code *** Test Case ***} (deprecated in RF 6.0). */
+        SINGULAR_SECTION_HEADER,
+        /** Malformed type expression in {@code ${name: type}} (RF 7.3). */
+        INVALID_VARIABLE_TYPE,
+        /** A {@code Secret} variable given a literal value in the Variables section (RF 7.4). */
+        SECRET_LITERAL_VALUE,
+        /** {@code VAR} creating a non-local variable without a value (deprecated in RF 7.4). */
+        VAR_WITHOUT_VALUE,
+        /** Literal {@code -tag} in {@code Test Tags} (deprecated in RF 7.2). */
+        HYPHEN_TAG_LITERAL,
+        /** Block opened with IF/FOR/WHILE/TRY/GROUP and never closed with END. */
+        UNCLOSED_BLOCK,
+        /** {@code END} without a matching block opener. */
+        ORPHAN_END,
+        /** {@code FOR ... IN ZIP} without an explicit {@code mode=} (deprecated in RF 7.0). */
+        FOR_IN_ZIP_WITHOUT_MODE,
+        /** Library alias declared with {@code WITH NAME} instead of {@code AS} (RF 6.0). */
+        WITH_NAME_ALIAS,
+        /** Data before the first section header. */
+        CONTENT_OUTSIDE_SECTION,
+        /** Test case or task name longer than the readability threshold. */
+        LONG_TEST_NAME,
+        /** Test case or task without any executable step. */
+        EMPTY_TEST_CASE
     }
 
     private final Category category;
@@ -29,13 +57,28 @@ public final class RobotFinding {
     private final int endOffset;
     private final int line;
     private final String message;
+    private final String replacement;
 
     public RobotFinding(Category category, int startOffset, int endOffset, int line, String message) {
+        this(category, startOffset, endOffset, line, message, null);
+    }
+
+    public RobotFinding(Category category, int startOffset, int endOffset, int line,
+                        String message, String replacement) {
         this.category = category;
         this.startOffset = startOffset;
         this.endOffset = endOffset;
         this.line = line;
         this.message = message;
+        this.replacement = replacement;
+    }
+
+    /**
+     * Text that should replace the highlighted range, or {@code null} when the
+     * finding cannot be fixed mechanically.
+     */
+    public String getReplacement() {
+        return replacement;
     }
 
     public Category getCategory() {
@@ -75,12 +118,13 @@ public final class RobotFinding {
                 && endOffset == that.endOffset
                 && line == that.line
                 && category == that.category
-                && Objects.equals(message, that.message);
+                && Objects.equals(message, that.message)
+                && Objects.equals(replacement, that.replacement);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(category, startOffset, endOffset, line, message);
+        return Objects.hash(category, startOffset, endOffset, line, message, replacement);
     }
 
     @Override

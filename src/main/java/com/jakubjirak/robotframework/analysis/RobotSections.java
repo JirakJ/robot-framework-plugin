@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +28,10 @@ public final class RobotSections {
 
     /** Canonical spelling keyed by normalized (lower-cased, singular-tolerant) name. */
     private static final Map<String, String> CANONICAL = new LinkedHashMap<>();
+
+    /** Singular spellings, deprecated since Robot Framework 6.0. */
+    private static final Set<String> SINGULAR = Set.of(
+            "setting", "variable", "test case", "task", "keyword", "comment");
 
     static {
         // Robot Framework accepts both singular and plural spellings of most headers.
@@ -77,6 +82,24 @@ public final class RobotSections {
     public static boolean isKnownHeader(String line) {
         String name = rawHeaderName(line);
         return name != null && CANONICAL.containsKey(name.toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Returns the canonical spelling for a bare section name (not a whole header
+     * line), or {@code null} when the name is not a known section.
+     */
+    @Nullable
+    public static String canonicalName(String name) {
+        return name == null ? null : CANONICAL.get(name.trim().toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Returns {@code true} when the header line uses a singular section name such
+     * as {@code *** Test Case ***}, deprecated since Robot Framework 6.0.
+     */
+    public static boolean isSingularHeader(String line) {
+        String name = rawHeaderName(line);
+        return name != null && SINGULAR.contains(name.trim().toLowerCase(Locale.ROOT));
     }
 
     /**

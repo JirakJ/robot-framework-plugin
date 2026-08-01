@@ -7,6 +7,8 @@ package com.jakubjirak.robotframework.inspection;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.jakubjirak.robotframework.analysis.RobotFinding;
 
+import java.util.Set;
+
 /**
  * Flags suite variables declared in {@code *** Variables ***} that are never
  * referenced within the same file. Disabled by default because variables may be
@@ -15,8 +17,8 @@ import com.jakubjirak.robotframework.analysis.RobotFinding;
 public class RobotUnusedVariableInspection extends AbstractRobotAnalyzerInspection {
 
     @Override
-    protected RobotFinding.Category category() {
-        return RobotFinding.Category.UNUSED_VARIABLE;
+    protected Set<RobotFinding.Category> categories() {
+        return Set.of(RobotFinding.Category.UNUSED_VARIABLE);
     }
 
     @Override

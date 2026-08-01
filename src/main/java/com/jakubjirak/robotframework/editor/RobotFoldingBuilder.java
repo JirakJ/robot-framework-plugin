@@ -33,24 +33,18 @@ public class RobotFoldingBuilder extends FoldingBuilderEx {
         ASTNode node = element.getNode();
         if (node == null) return;
         
-        // Fold sections (Settings, Variables, Test Cases, Keywords)
-        if (node.getElementType() == RobotTokenTypes.SETTINGS_HEADER ||
-            node.getElementType() == RobotTokenTypes.VARIABLES_HEADER ||
-            node.getElementType() == RobotTokenTypes.TEST_CASES_HEADER ||
-            node.getElementType() == RobotTokenTypes.KEYWORDS_HEADER) {
-            
+        // Fold sections (Settings, Variables, Test Cases, Tasks, Keywords, Comments)
+        if (RobotTokenTypes.SECTION_HEADERS.contains(node.getElementType())) {
+
             TextRange range = getSectionRange(element, document);
             if (range != null && range.getLength() > 0) {
                 descriptors.add(new FoldingDescriptor(node, range));
             }
         }
-        
-        // Fold control flow blocks (IF, TRY, WHILE, FOR)
-        if (node.getElementType() == RobotTokenTypes.IF_KEYWORD ||
-            node.getElementType() == RobotTokenTypes.TRY_KEYWORD ||
-            node.getElementType() == RobotTokenTypes.WHILE_KEYWORD ||
-            node.getElementType() == RobotTokenTypes.FOR_KEYWORD) {
-            
+
+        // Fold control flow blocks (IF, TRY, WHILE, FOR, GROUP)
+        if (RobotTokenTypes.BLOCK_OPENERS.contains(node.getElementType())) {
+
             TextRange range = getControlFlowBlockRange(element, document);
             if (range != null && range.getLength() > 0) {
                 descriptors.add(new FoldingDescriptor(node, range));
@@ -71,11 +65,8 @@ public class RobotFoldingBuilder extends FoldingBuilderEx {
         PsiElement sibling = sectionHeader.getNextSibling();
         while (sibling != null) {
             ASTNode siblingNode = sibling.getNode();
-            if (siblingNode != null && (
-                siblingNode.getElementType() == RobotTokenTypes.SETTINGS_HEADER ||
-                siblingNode.getElementType() == RobotTokenTypes.VARIABLES_HEADER ||
-                siblingNode.getElementType() == RobotTokenTypes.TEST_CASES_HEADER ||
-                siblingNode.getElementType() == RobotTokenTypes.KEYWORDS_HEADER)) {
+            if (siblingNode != null
+                    && RobotTokenTypes.SECTION_HEADERS.contains(siblingNode.getElementType())) {
                 endOffset = sibling.getTextRange().getStartOffset();
                 break;
             }
@@ -97,10 +88,7 @@ public class RobotFoldingBuilder extends FoldingBuilderEx {
             ASTNode siblingNode = sibling.getNode();
             if (siblingNode != null) {
                 // Increment depth for nested control flow
-                if (siblingNode.getElementType() == RobotTokenTypes.IF_KEYWORD ||
-                    siblingNode.getElementType() == RobotTokenTypes.TRY_KEYWORD ||
-                    siblingNode.getElementType() == RobotTokenTypes.WHILE_KEYWORD ||
-                    siblingNode.getElementType() == RobotTokenTypes.FOR_KEYWORD) {
+                if (RobotTokenTypes.BLOCK_OPENERS.contains(siblingNode.getElementType())) {
                     depth++;
                 }
                 // Decrement depth for END
@@ -128,10 +116,12 @@ public class RobotFoldingBuilder extends FoldingBuilderEx {
         if (node.getElementType() == RobotTokenTypes.VARIABLES_HEADER) return "*** Variables ***...";
         if (node.getElementType() == RobotTokenTypes.TEST_CASES_HEADER) return "*** Test Cases ***...";
         if (node.getElementType() == RobotTokenTypes.KEYWORDS_HEADER) return "*** Keywords ***...";
+        if (node.getElementType() == RobotTokenTypes.COMMENTS_HEADER) return "*** Comments ***...";
         if (node.getElementType() == RobotTokenTypes.IF_KEYWORD) return "IF...END";
         if (node.getElementType() == RobotTokenTypes.TRY_KEYWORD) return "TRY...END";
         if (node.getElementType() == RobotTokenTypes.WHILE_KEYWORD) return "WHILE...END";
         if (node.getElementType() == RobotTokenTypes.FOR_KEYWORD) return "FOR...END";
+        if (node.getElementType() == RobotTokenTypes.GROUP_KEYWORD) return "GROUP...END";
         return "...";
     }
     

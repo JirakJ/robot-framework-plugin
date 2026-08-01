@@ -1,17 +1,35 @@
 package com.jakubjirak.robotframework.editor;
 
-import com.intellij.codeInsight.completion.*;
+import com.intellij.codeInsight.completion.CompletionContributor;
+import com.intellij.codeInsight.completion.CompletionParameters;
+import com.intellij.codeInsight.completion.CompletionProvider;
+import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ProcessingContext;
+import com.jakubjirak.robotframework.analysis.RobotSyntax;
 import com.jakubjirak.robotframework.language.RobotLanguage;
 import com.jakubjirak.robotframework.language.RobotTokenTypes;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.regex.Pattern;
+
+/**
+ * Code completion for Robot Framework 7.4: control structures including
+ * {@code GROUP} (RF 7.2), current suite/test/keyword settings, {@code VAR}
+ * scopes including {@code SUITES} (RF 7.1), {@code WHILE} limit options, and
+ * context-aware completion of conversion types inside {@code ${name: type}}
+ * (RF 7.3).
+ */
 public class RobotCompletionContributor extends CompletionContributor {
-    
+
+    /** Caret sits after the type colon of a variable, e.g. {@code ${count: |}}. */
+    private static final Pattern INSIDE_TYPE =
+            Pattern.compile(".*[$@&]\\{[^{}]*:\\s[^{}]*$", Pattern.DOTALL);
+
     public RobotCompletionContributor() {
         extend(CompletionType.BASIC,
             PlatformPatterns.psiElement().withLanguage(RobotLanguage.INSTANCE),
@@ -20,72 +38,122 @@ public class RobotCompletionContributor extends CompletionContributor {
                 protected void addCompletions(@NotNull CompletionParameters parameters,
                                             @NotNull ProcessingContext context,
                                             @NotNull CompletionResultSet result) {
-                    
-                    // RF 7+ Control Flow Keywords
-                    addControlFlowKeywords(result);
 
-                    // Built-in keywords
+                    String prefix = linePrefix(parameters);
+
+                    // Inside ${name: ...} only a type makes sense.
+                    if (INSIDE_TYPE.matcher(prefix).matches()) {
+                        addConversionTypes(result);
+                        return;
+                    }
+
+                    addControlStructures(result);
+                    addStatementOptions(prefix, result);
                     addBuiltInKeywords(result);
-                    
-                    // Variables
                     addCommonVariables(result);
-                    
-                    // Settings
                     addSettings(result);
-
-                    // Settings section keywords (Library, Resource, etc.)
                     addSettingsSectionKeywords(result);
-
-                    // Variables from current file
                     addVariablesFromFile(parameters, result);
-
-                    // Keywords from current file
                     addKeywordsFromFile(parameters, result);
-
-                    // Section headers
                     addSectionHeaders(result);
                 }
             });
     }
 
-    private void addControlFlowKeywords(CompletionResultSet result) {
-        String[] keywords = {
+    /** Text of the current line up to the caret. */
+    private static String linePrefix(CompletionParameters parameters) {
+        PsiFile file = parameters.getOriginalFile();
+        String text = file.getText();
+        int offset = Math.max(0, Math.min(parameters.getOffset(), text.length()));
+        int start = text.lastIndexOf('\n', Math.max(0, offset - 1)) + 1;
+        return text.substring(start, offset);
+    }
+
+    private void addConversionTypes(CompletionResultSet result) {
+        for (String type : RobotSyntax.CONVERSION_TYPES) {
+            result.addElement(LookupElementBuilder.create(type)
+                .withIcon(com.intellij.icons.AllIcons.Nodes.Class)
+                .withTypeText("Conversion type")
+                .withTailText(" (Robot Framework 7.3+)", true));
+        }
+    }
+
+    private void addControlStructures(CompletionResultSet result) {
+        String[] markers = {
             "IF", "ELSE IF", "ELSE", "END",
             "TRY", "EXCEPT", "FINALLY",
-            "WHILE", "FOR", "BREAK", "CONTINUE",
+            "WHILE", "FOR", "GROUP", "BREAK", "CONTINUE",
             "RETURN", "VAR"
         };
 
-        for (String keyword : keywords) {
-            result.addElement(LookupElementBuilder.create(keyword)
+        for (String marker : markers) {
+            LookupElementBuilder element = LookupElementBuilder.create(marker)
                 .withIcon(com.intellij.icons.AllIcons.Nodes.Method)
-                .withTypeText("RF 7+ Control Flow")
-                .withBoldness(true)
-                .withTailText(" (Robot Framework 7+)", true));
+                .withTypeText("Control structure")
+                .withBoldness(true);
+            if ("GROUP".equals(marker)) {
+                element = element.withTailText(" (Robot Framework 7.2+)", true);
+            } else if ("VAR".equals(marker)) {
+                element = element.withTailText(" (Robot Framework 7.0+)", true);
+            }
+            result.addElement(element);
+        }
+    }
+
+    /** Offers {@code scope=} values after VAR and limit options after WHILE. */
+    private void addStatementOptions(String prefix, CompletionResultSet result) {
+        String statement = RobotSyntax.normalizeMarker(prefix.trim());
+
+        if (statement.startsWith("VAR")) {
+            for (String scope : RobotSyntax.VAR_SCOPES) {
+                result.addElement(LookupElementBuilder.create("scope=" + scope)
+                    .withIcon(com.intellij.icons.AllIcons.Nodes.Parameter)
+                    .withTypeText("VAR scope")
+                    .withTailText("SUITES".equals(scope) ? " (Robot Framework 7.1+)" : "", true));
+            }
+            result.addElement(LookupElementBuilder.create("separator=")
+                .withIcon(com.intellij.icons.AllIcons.Nodes.Parameter)
+                .withTypeText("VAR option"));
+        }
+
+        if (statement.startsWith("WHILE")) {
+            for (String option : RobotSyntax.WHILE_OPTIONS) {
+                result.addElement(LookupElementBuilder.create(option)
+                    .withIcon(com.intellij.icons.AllIcons.Nodes.Parameter)
+                    .withTypeText("WHILE option"));
+            }
         }
     }
 
     private void addBuiltInKeywords(CompletionResultSet result) {
-        // BuiltIn library keywords
+        // BuiltIn library keywords. Keywords deprecated in favour of control
+        // structures (Exit For Loop, Return From Keyword, ...) are omitted on
+        // purpose so completion never suggests syntax the user should migrate off.
         String[] builtInKeywords = {
             "Log", "Log To Console", "Log Many", "Log Variables",
             "Should Be Equal", "Should Not Be Equal", "Should Contain", "Should Not Contain",
             "Should Be True", "Should Be False", "Should Be Empty", "Should Not Be Empty",
             "Should Match", "Should Not Match", "Should Match Regexp", "Should Not Match Regexp",
             "Should Start With", "Should Not Start With", "Should End With", "Should Not End With",
-            "Set Variable", "Set Variable If", "Set Test Variable", "Set Suite Variable", "Set Global Variable",
+            "Set Variable", "Set Variable If", "Set Test Variable", "Set Task Variable",
+            "Set Suite Variable", "Set Global Variable", "Set Local Variable",
             "Create List", "Create Dictionary", "Append To List", "Remove From List", "Get From List",
-            "Set To Dictionary", "Get From Dictionary", "Remove From Dictionary", "Get Dictionary Keys", "Get Dictionary Values",
-            "Run Keyword", "Run Keyword If", "Run Keyword Unless", "Run Keywords",
-            "Run Keyword And Continue On Failure", "Run Keyword And Expect Error", "Run Keyword And Ignore Error",
-            "Wait Until Keyword Succeeds", "Repeat Keyword", "Run Keyword And Return", "Run Keyword And Return If",
-            "Pass Execution", "Fail", "Fatal Error", "Skip", "Skip If",
-            "Get Length", "Get Count", "Length Should Be", "Should Be Equal As Integers", "Should Be Equal As Numbers", "Should Be Equal As Strings",
+            "Set To Dictionary", "Get From Dictionary", "Remove From Dictionary",
+            "Get Dictionary Keys", "Get Dictionary Values",
+            "Run Keyword", "Run Keyword If", "Run Keywords",
+            "Run Keyword And Continue On Failure", "Run Keyword And Expect Error",
+            "Run Keyword And Ignore Error", "Run Keyword And Warn On Failure",
+            "Wait Until Keyword Succeeds", "Repeat Keyword", "Run Keyword And Return",
+            "Run Keyword And Return If", "Run Keyword And Return Status",
+            "Pass Execution", "Pass Execution If", "Fail", "Fatal Error", "Skip", "Skip If",
+            "Get Length", "Get Count", "Length Should Be",
+            "Should Be Equal As Integers", "Should Be Equal As Numbers", "Should Be Equal As Strings",
             "Convert To Integer", "Convert To Number", "Convert To String", "Convert To Boolean",
-            "Sleep", "Catenate", "Get Time", "Evaluate", "Import Library", "Import Resource", "Import Variables",
+            "Convert To Bytes", "Convert To Hex", "Convert To Octal", "Convert To Binary",
+            "Sleep", "Catenate", "Get Time", "Evaluate",
+            "Import Library", "Import Resource", "Import Variables",
             "Set Tags", "Remove Tags", "Get Library Instance", "Reload Library",
-            "No Operation", "Comment", "Continue For Loop", "Continue For Loop If", "Exit For Loop", "Exit For Loop If",
-            "Return From Keyword", "Return From Keyword If"
+            "No Operation", "Comment"
         };
 
         // Collections library keywords
@@ -109,7 +177,7 @@ public class RobotCompletionContributor extends CompletionContributor {
             "Split String", "Split String From Right", "Split String To Characters", "Split To Lines",
             "Strip String", "Fetch From Left", "Fetch From Right"
         };
-        
+
         for (String keyword : builtInKeywords) {
             result.addElement(LookupElementBuilder.create(keyword)
                 .withIcon(com.intellij.icons.AllIcons.Nodes.Method)
@@ -131,47 +199,35 @@ public class RobotCompletionContributor extends CompletionContributor {
                 .withTailText(" (String)", true));
         }
     }
-    
+
     private void addCommonVariables(CompletionResultSet result) {
-        String[] variables = {
-            "${CURDIR}", "${TEMPDIR}", "${EXECDIR}", "${/}", "${:}",
-            "${SPACE}", "${EMPTY}", "${True}", "${False}", "${None}",
-            "${TEST NAME}", "${TEST DOCUMENTATION}", "${TEST STATUS}",
-            "${TEST MESSAGE}", "${SUITE NAME}", "${SUITE SOURCE}",
-            "${SUITE DOCUMENTATION}", "${KEYWORD STATUS}", "${KEYWORD MESSAGE}",
-            "${LOG LEVEL}", "${OUTPUT DIR}", "${OUTPUT FILE}"
-        };
-        
-        for (String variable : variables) {
+        for (String variable : RobotSyntax.BUILT_IN_VARIABLES) {
             result.addElement(LookupElementBuilder.create(variable)
                 .withIcon(com.intellij.icons.AllIcons.Nodes.Variable)
                 .withTypeText("Built-in Variable"));
         }
     }
-    
+
     private void addSettings(CompletionResultSet result) {
-        String[] settings = {
-            "[Documentation]", "[Tags]", "[Setup]", "[Teardown]",
-            "[Template]", "[Timeout]", "[Arguments]", "[Return]"
-        };
-        
-        for (String setting : settings) {
+        for (String setting : RobotSyntax.TEST_SETTINGS) {
             result.addElement(LookupElementBuilder.create(setting)
                 .withIcon(com.intellij.icons.AllIcons.Nodes.Annotationtype)
-                .withTypeText("Setting"));
+                .withTypeText("Test setting"));
+        }
+        for (String setting : RobotSyntax.KEYWORD_SETTINGS) {
+            if (RobotSyntax.TEST_SETTINGS.contains(setting)) {
+                continue;
+            }
+            result.addElement(LookupElementBuilder.create(setting)
+                .withIcon(com.intellij.icons.AllIcons.Nodes.Annotationtype)
+                .withTypeText("Keyword setting")
+                .withTailText("[Setup]".equals(setting) ? " (Robot Framework 7.0+)" : "", true));
         }
     }
 
     private void addSettingsSectionKeywords(CompletionResultSet result) {
-        String[] settingsKeywords = {
-            "Library", "Resource", "Variables", "Documentation",
-            "Metadata", "Suite Setup", "Suite Teardown", "Test Setup", "Test Teardown",
-            "Test Template", "Test Timeout", "Force Tags", "Default Tags",
-            "Task Setup", "Task Teardown", "Task Template", "Task Timeout"
-        };
-
-        for (String keyword : settingsKeywords) {
-            result.addElement(LookupElementBuilder.create(keyword)
+        for (String setting : RobotSyntax.SUITE_SETTINGS) {
+            result.addElement(LookupElementBuilder.create(setting)
                 .withIcon(com.intellij.icons.AllIcons.General.Settings)
                 .withTypeText("Settings Section")
                 .withTailText(" (*** Settings ***)", true));
@@ -180,66 +236,55 @@ public class RobotCompletionContributor extends CompletionContributor {
 
     private void addVariablesFromFile(CompletionParameters parameters, CompletionResultSet result) {
         PsiFile file = parameters.getOriginalFile();
-        if (file == null) return;
 
-        // Look for variables in *** Variables *** section
         boolean inVariablesSection = false;
 
         for (PsiElement child : file.getChildren()) {
             if (child.getNode() == null) continue;
 
-            // Check if we entered Variables section
             if (child.getNode().getElementType() == RobotTokenTypes.VARIABLES_HEADER) {
                 inVariablesSection = true;
                 continue;
             }
 
-            // Check if we left Variables section
-            if (inVariablesSection && (
-                child.getNode().getElementType() == RobotTokenTypes.SETTINGS_HEADER ||
-                child.getNode().getElementType() == RobotTokenTypes.TEST_CASES_HEADER ||
-                child.getNode().getElementType() == RobotTokenTypes.KEYWORDS_HEADER)) {
+            if (inVariablesSection
+                    && RobotTokenTypes.SECTION_HEADERS.contains(child.getNode().getElementType())) {
                 break;
             }
 
-            // Extract variable names
             if (inVariablesSection && child.getNode().getElementType() == RobotTokenTypes.VARIABLE) {
-                String varText = child.getText().trim();
-                if (!varText.isEmpty()) {
-                    result.addElement(LookupElementBuilder.create(varText)
-                        .withIcon(com.intellij.icons.AllIcons.Nodes.Variable)
-                        .withTypeText("File Variable")
-                        .withTailText(" (defined in this file)", true));
+                RobotSyntax.TypedVariable variable = RobotSyntax.parseVariable(child.getText().trim());
+                if (variable == null || variable.getName().isEmpty()) {
+                    continue;
                 }
+                String decoration = child.getText().trim().substring(0, 1);
+                String lookup = decoration + "{" + variable.getName() + "}";
+                result.addElement(LookupElementBuilder.create(lookup)
+                    .withIcon(com.intellij.icons.AllIcons.Nodes.Variable)
+                    .withTypeText(variable.isTyped() ? variable.getType() : "File Variable")
+                    .withTailText(" (defined in this file)", true));
             }
         }
     }
 
     private void addKeywordsFromFile(CompletionParameters parameters, CompletionResultSet result) {
         PsiFile file = parameters.getOriginalFile();
-        if (file == null) return;
 
-        // Look for keywords in *** Keywords *** section
         boolean inKeywordsSection = false;
 
         for (PsiElement child : file.getChildren()) {
             if (child.getNode() == null) continue;
 
-            // Check if we entered Keywords section
             if (child.getNode().getElementType() == RobotTokenTypes.KEYWORDS_HEADER) {
                 inKeywordsSection = true;
                 continue;
             }
 
-            // Check if we left Keywords section
-            if (inKeywordsSection && (
-                child.getNode().getElementType() == RobotTokenTypes.SETTINGS_HEADER ||
-                child.getNode().getElementType() == RobotTokenTypes.VARIABLES_HEADER ||
-                child.getNode().getElementType() == RobotTokenTypes.TEST_CASES_HEADER)) {
+            if (inKeywordsSection
+                    && RobotTokenTypes.SECTION_HEADERS.contains(child.getNode().getElementType())) {
                 break;
             }
 
-            // Extract keyword names
             if (inKeywordsSection && child.getNode().getElementType() == RobotTokenTypes.IDENTIFIER) {
                 String keywordName = child.getText().trim();
                 if (!keywordName.isEmpty() && !keywordName.startsWith("[")) {
@@ -254,8 +299,8 @@ public class RobotCompletionContributor extends CompletionContributor {
 
     private void addSectionHeaders(CompletionResultSet result) {
         String[] headers = {
-            "*** Settings ***", "*** Variables ***",
-            "*** Test Cases ***", "*** Keywords ***", "*** Comments ***"
+            "*** Settings ***", "*** Variables ***", "*** Test Cases ***",
+            "*** Tasks ***", "*** Keywords ***", "*** Comments ***"
         };
 
         for (String header : headers) {

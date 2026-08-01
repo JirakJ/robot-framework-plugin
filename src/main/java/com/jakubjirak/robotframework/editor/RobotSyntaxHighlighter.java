@@ -43,6 +43,10 @@ public class RobotSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey TAG =
             createTextAttributesKey("ROBOT_TAG", DefaultLanguageHighlighterColors.MARKUP_TAG);
 
+    /** Type annotation of a variable, e.g. the {@code int} in {@code ${count: int}} (RF 7.3). */
+    public static final TextAttributesKey VARIABLE_TYPE =
+            createTextAttributesKey("ROBOT_VARIABLE_TYPE", DefaultLanguageHighlighterColors.CLASS_REFERENCE);
+
     private static final TextAttributesKey[] COMMENT_KEYS = new TextAttributesKey[]{COMMENT};
     private static final TextAttributesKey[] KEYWORD_KEYS = new TextAttributesKey[]{KEYWORD};
     private static final TextAttributesKey[] CONTROL_FLOW_KEYS = new TextAttributesKey[]{CONTROL_FLOW};
@@ -67,24 +71,8 @@ public class RobotSyntaxHighlighter extends SyntaxHighlighterBase {
         if (tokenType.equals(RobotTokenTypes.COMMENT)) {
             return COMMENT_KEYS;
         }
-        // RF 7+ Control Flow Keywords
-        if (tokenType.equals(RobotTokenTypes.IF_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.ELSE_IF_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.ELSE_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.TRY_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.EXCEPT_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.FINALLY_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.WHILE_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.FOR_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.END_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.BREAK_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.CONTINUE_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.RETURN_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.VAR_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.IN_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.IN_RANGE_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.IN_ENUMERATE_KEYWORD) ||
-            tokenType.equals(RobotTokenTypes.IN_ZIP_KEYWORD)) {
+        // Control structures through Robot Framework 7.2 (GROUP included)
+        if (RobotTokenTypes.CONTROL_FLOW.contains(tokenType)) {
             return CONTROL_FLOW_KEYS;
         }
         if (tokenType.equals(RobotTokenTypes.KEYWORD)) {
@@ -96,11 +84,7 @@ public class RobotSyntaxHighlighter extends SyntaxHighlighterBase {
         if (tokenType.equals(RobotTokenTypes.STRING)) {
             return STRING_KEYS;
         }
-        if (tokenType.equals(RobotTokenTypes.SECTION_HEADER) ||
-            tokenType.equals(RobotTokenTypes.SETTINGS_HEADER) ||
-            tokenType.equals(RobotTokenTypes.VARIABLES_HEADER) ||
-            tokenType.equals(RobotTokenTypes.TEST_CASES_HEADER) ||
-            tokenType.equals(RobotTokenTypes.KEYWORDS_HEADER)) {
+        if (RobotTokenTypes.SECTION_HEADERS.contains(tokenType)) {
             return SECTION_KEYS;
         }
         if (tokenType.equals(RobotTokenTypes.SETTING)) {

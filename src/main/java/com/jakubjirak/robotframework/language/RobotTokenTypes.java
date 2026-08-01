@@ -2,6 +2,7 @@ package com.jakubjirak.robotframework.language;
 
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.tree.TokenSet;
 
 public interface RobotTokenTypes {
     IElementType WHITE_SPACE = TokenType.WHITE_SPACE;
@@ -13,8 +14,10 @@ public interface RobotTokenTypes {
     IElementType SECTION_HEADER = new RobotElementType("SECTION_HEADER");
     IElementType SETTINGS_HEADER = new RobotElementType("SETTINGS_HEADER");
     IElementType VARIABLES_HEADER = new RobotElementType("VARIABLES_HEADER");
+    /** Also used for {@code *** Tasks ***}, which is the same section under another name. */
     IElementType TEST_CASES_HEADER = new RobotElementType("TEST_CASES_HEADER");
     IElementType KEYWORDS_HEADER = new RobotElementType("KEYWORDS_HEADER");
+    IElementType COMMENTS_HEADER = new RobotElementType("COMMENTS_HEADER");
     IElementType SETTING = new RobotElementType("SETTING");
     IElementType NUMBER = new RobotElementType("NUMBER");
     IElementType OPERATOR = new RobotElementType("OPERATOR");
@@ -33,6 +36,8 @@ public interface RobotTokenTypes {
     IElementType CONTINUE_KEYWORD = new RobotElementType("CONTINUE_KEYWORD");
     IElementType RETURN_KEYWORD = new RobotElementType("RETURN_KEYWORD");
     IElementType VAR_KEYWORD = new RobotElementType("VAR_KEYWORD");
+    /** {@code GROUP} block, added in Robot Framework 7.2. */
+    IElementType GROUP_KEYWORD = new RobotElementType("GROUP_KEYWORD");
 
     // FOR loop modifiers
     IElementType IN_KEYWORD = new RobotElementType("IN_KEYWORD");
@@ -45,4 +50,20 @@ public interface RobotTokenTypes {
 
     // Tags
     IElementType TAG = new RobotElementType("TAG");
+
+    /** Every {@code *** ... ***} header token. */
+    TokenSet SECTION_HEADERS = TokenSet.create(
+            SECTION_HEADER, SETTINGS_HEADER, VARIABLES_HEADER,
+            TEST_CASES_HEADER, KEYWORDS_HEADER, COMMENTS_HEADER);
+
+    /** Markers that open a block terminated by {@code END}. {@code GROUP} is RF 7.2. */
+    TokenSet BLOCK_OPENERS = TokenSet.create(
+            IF_KEYWORD, FOR_KEYWORD, WHILE_KEYWORD, TRY_KEYWORD, GROUP_KEYWORD);
+
+    /** All Robot Framework control structure markers. */
+    TokenSet CONTROL_FLOW = TokenSet.create(
+            IF_KEYWORD, ELSE_IF_KEYWORD, ELSE_KEYWORD, TRY_KEYWORD, EXCEPT_KEYWORD,
+            FINALLY_KEYWORD, WHILE_KEYWORD, FOR_KEYWORD, GROUP_KEYWORD, END_KEYWORD,
+            BREAK_KEYWORD, CONTINUE_KEYWORD, RETURN_KEYWORD, VAR_KEYWORD,
+            IN_KEYWORD, IN_RANGE_KEYWORD, IN_ENUMERATE_KEYWORD, IN_ZIP_KEYWORD);
 }

@@ -7,7 +7,6 @@ import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.jakubjirak.robotframework.language.RobotSyntaxHighlighter;
 import com.jakubjirak.robotframework.language.RobotTokenTypes;
 import org.jetbrains.annotations.NotNull;
 
