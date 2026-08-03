@@ -374,6 +374,64 @@ class RobotLexerTest {
     }
 
     @Nested
+    @DisplayName("Suite Settings")
+    class SuiteSettingTests {
+        private List<IElementType> tokensOf(String settingsBody) {
+            return tokenize("*** Settings ***\n" + settingsBody);
+        }
+
+        @Test
+        @DisplayName("a single-word suite setting is a SETTING token")
+        void singleWord() {
+            List<IElementType> tokens = tokensOf("Library    OperatingSystem");
+            assertEquals(RobotTokenTypes.SETTING, tokens.get(2));
+        }
+
+        @Test
+        @DisplayName("a two-word suite setting is one SETTING token")
+        void twoWords() {
+            assertEquals(List.of("*** Settings ***", "\n", "Test Tags", "    ", "smoke"),
+                tokenTexts("*** Settings ***\nTest Tags    smoke"));
+        }
+
+        @Test
+        @DisplayName("suite settings are case insensitive")
+        void caseInsensitive() {
+            List<IElementType> tokens = tokensOf("suite setup    Log    hi");
+            assertEquals(RobotTokenTypes.SETTING, tokens.get(2));
+        }
+
+        @Test
+        @DisplayName("deprecated settings are still recognized")
+        void deprecatedSettings() {
+            assertEquals(RobotTokenTypes.SETTING, tokensOf("Force Tags    smoke").get(2));
+            assertEquals(RobotTokenTypes.SETTING, tokensOf("Default Tags    smoke").get(2));
+        }
+
+        @Test
+        @DisplayName("a setting name must end at a cell boundary")
+        void cellBoundary() {
+            // "Library Loads Fast" is a test name, not the Library setting.
+            List<IElementType> tokens = tokenize("*** Test Cases ***\nLibrary Loads Fast\n    Log    hi");
+            assertFalse(tokens.contains(RobotTokenTypes.SETTING));
+        }
+
+        @Test
+        @DisplayName("setting names are only recognized inside the Settings section")
+        void onlyInSettingsSection() {
+            List<IElementType> tokens = tokenize("*** Test Cases ***\nLibrary\n    Log    hi");
+            assertFalse(tokens.contains(RobotTokenTypes.SETTING));
+        }
+
+        @Test
+        @DisplayName("an indented value is not a setting name")
+        void indentedValue() {
+            List<IElementType> tokens = tokensOf("Library    OperatingSystem\n...    AS    OS");
+            assertEquals(1, tokens.stream().filter(t -> t == RobotTokenTypes.SETTING).count());
+        }
+    }
+
+    @Nested
     @DisplayName("Token Ranges")
     class TokenRangeTests {
         @Test

@@ -2,6 +2,30 @@
 
 All notable changes to the Robot Framework plugin will be documented in this file.
 
+## [2026.6.0] - 2026-08-03
+
+Makes the advertised test execution real and removes the features that were only
+pretending to exist.
+
+### Added
+- **Test execution that runs your tests.** The run configuration now carries a suite file or directory, `--test`, `--include`/`--exclude` tags, `--outputdir`, extra arguments, a Python interpreter and a working directory, with a real settings form and `checkConfiguration` validation. Robot is started as `<interpreter> -m robot` with an argument list handed straight to `GeneralCommandLine`, so nothing is ever interpreted by a shell — a path or test name containing spaces, quotes, `;` or `$(…)` stays a single argument.
+- **Run gutter icons** on every test case and task (`RobotRunLineMarkerContributor`).
+- **Run from context** — `RobotRunConfigurationProducer` builds a configuration from the editor, the project view or a right-click: inside a test it runs that test, otherwise the whole suite.
+- **Run Test** (`Ctrl+Shift+F10`) and **Run Test with DEBUG Log** (`Ctrl+Shift+F9`), the latter adding `--loglevel DEBUG`.
+- **Generate Keyword** now works: it takes the keyword call under the caret, refuses duplicates using Robot Framework's own name matching, creates the `*** Keywords ***` section when the file has none, and leaves the caret on the generated step.
+- New pure engines `RobotStructure` (test cases, tasks, keywords, "which test is at this offset") and `RobotKeywordGenerator`, both fully unit tested.
+
+### Fixed
+- **Suite settings were never highlighted.** `Library`, `Documentation`, `Test Tags`, `Suite Setup` and the rest rendered as plain text, because the lexer only recognised `[Bracketed]` settings. Multi-word settings are matched at a cell boundary, so a test named `Library Loads Fast` is not mistaken for the `Library` setting.
+- **The RF 7.3 variable type was invisible.** `ROBOT_VARIABLE_TYPE` fell back to `CLASS_REFERENCE`, which the IntelliJ Light scheme leaves unstyled, so the type rendered in the variable's own colour. It now falls back to `METADATA`.
+
+### Removed
+- **Placeholder features.** The "Interactive REPL" action opened a message box reading "FREE Feature!", the "Web Inspector" tool window was a static `JLabel` listing things it could not do, and the "Robot Framework" tool window was a label reading "Test Results". None of them did anything; test output now goes to the normal run console. The custom `programRunner` was redundant with the platform's default runner, and the empty `RobotRunConfigurationOptions` is gone.
+- Claims of a step-through debugger, a performance profiler, parallel execution, a REPL and a web inspector are removed from the plugin description and the README. **The paid tier now has no exclusive features** — see `MARKETPLACE_LISTING.md` for the open decision.
+
+### Changed
+- 309 unit tests (was 260), all green.
+
 ## [2026.5.0] - 2026-08-01
 
 Brings the plugin up to the syntax of Robot Framework 7.4.

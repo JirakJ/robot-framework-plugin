@@ -43,9 +43,14 @@ public class RobotSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey TAG =
             createTextAttributesKey("ROBOT_TAG", DefaultLanguageHighlighterColors.MARKUP_TAG);
 
-    /** Type annotation of a variable, e.g. the {@code int} in {@code ${count: int}} (RF 7.3). */
+    /**
+     * Type annotation of a variable, e.g. the {@code int} in {@code ${count: int}} (RF 7.3).
+     * Falls back to METADATA rather than CLASS_REFERENCE: the IntelliJ Light scheme
+     * leaves class references unstyled, which made the type indistinguishable from
+     * the variable name it sits inside.
+     */
     public static final TextAttributesKey VARIABLE_TYPE =
-            createTextAttributesKey("ROBOT_VARIABLE_TYPE", DefaultLanguageHighlighterColors.CLASS_REFERENCE);
+            createTextAttributesKey("ROBOT_VARIABLE_TYPE", DefaultLanguageHighlighterColors.METADATA);
 
     private static final TextAttributesKey[] COMMENT_KEYS = new TextAttributesKey[]{COMMENT};
     private static final TextAttributesKey[] KEYWORD_KEYS = new TextAttributesKey[]{KEYWORD};

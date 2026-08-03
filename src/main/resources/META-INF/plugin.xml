@@ -6,9 +6,9 @@
     <description><![CDATA[<h2>Robot Framework — Full IDE Intelligence for Robot Framework</h2>
 
 <p>
-  Turn your JetBrains IDE into a complete Robot Framework development environment.
-  Intelligent code completion, step-through debugging, interactive REPL, and built-in
-  web inspector — everything you need to write, run, and debug Robot Framework tests.
+  Turn your JetBrains IDE into a complete Robot Framework development environment:
+  Robot Framework 7.4 syntax support, code completion, navigation, inspections with
+  one-click migration fixes, a formatter, and test execution from the gutter.
 </p>
 
 <h3>Robot Framework 7.4 Syntax</h3>
@@ -43,24 +43,19 @@
   <li><b>Parameter Hints</b> — Inline parameter hints for keyword arguments</li>
 </ul>
 
-<h3>Execution and Debugging</h3>
+<h3>Test Execution</h3>
 <ul>
-  <li><b>Test Execution</b> — Run tests directly from the editor with rich output</li>
-  <li><b>Step-Through Debugger</b> — Breakpoints, variable inspection, and conditional breakpoints</li>
-  <li><b>Interactive REPL</b> — Test keywords in real time without running full suites</li>
-  <li><b>Performance Profiler</b> — Find slow keywords and optimize execution time</li>
-</ul>
-
-<h3>Web Testing</h3>
-<ul>
-  <li><b>Web Inspector</b> — Built-in browser element inspector for locator generation</li>
-  <li><b>SeleniumLibrary Support</b> — Full completion and navigation for SeleniumLibrary keywords</li>
+  <li><b>Run from the gutter</b> — Every test case gets a Run icon; one click executes just that test</li>
+  <li><b>Run configurations</b> — Suite or directory, <code>--test</code>, <code>--include</code>/<code>--exclude</code> tags,
+      <code>--outputdir</code>, extra arguments, interpreter and working directory</li>
+  <li><b>Run with DEBUG log</b> — One action to re-run with <code>--loglevel DEBUG</code> when a failure needs the detail</li>
+  <li><b>Safe invocation</b> — Robot is started as <code>&lt;interpreter&gt; -m robot</code> with an argument list, never through a shell</li>
 </ul>
 
 <h3>Requirements</h3>
 <ul>
-  <li>IntelliJ IDEA, PyCharm, or compatible JetBrains IDE (2024.1+)</li>
-  <li>Python with Robot Framework installed</li>
+  <li>IntelliJ IDEA, PyCharm, or compatible JetBrains IDE (2024.2+)</li>
+  <li>Python with Robot Framework installed (needed for test execution)</li>
 </ul>
 
 <h3>Support</h3>
@@ -73,7 +68,7 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
 
-    <product-descriptor code="PROBOTFRAMEWORK" release-date="20260801" release-version="20265" optional="true"/>
+    <product-descriptor code="PROBOTFRAMEWORK" release-date="20260803" release-version="20266" optional="true"/>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Language Definition -->
@@ -245,18 +240,10 @@
         
         <!-- Test Execution -->
         <configurationType implementation="com.jakubjirak.robotframework.execution.RobotRunConfigurationType"/>
-        <programRunner implementation="com.jakubjirak.robotframework.execution.RobotProgramRunner"/>
-        
-        <!-- Tool Windows -->
-        <toolWindow id="Robot Framework"
-                   anchor="bottom"
-                   icon="/icons/robot_13x13.svg"
-                   factoryClass="com.jakubjirak.robotframework.ui.RobotToolWindowFactory"/>
-        
-        <toolWindow id="Web Inspector"
-                   anchor="right"
-                   icon="/icons/inspector_13x13.svg"
-                   factoryClass="com.jakubjirak.robotframework.ui.WebInspectorToolWindowFactory"/>
+        <runConfigurationProducer
+            implementation="com.jakubjirak.robotframework.execution.RobotRunConfigurationProducer"/>
+        <runLineMarkerContributor language="RobotFramework"
+            implementationClass="com.jakubjirak.robotframework.execution.RobotRunLineMarkerContributor"/>
         
         <!-- Project Service -->
         <projectService serviceImplementation="com.jakubjirak.robotframework.core.RobotProjectService"/>
@@ -280,34 +267,26 @@
             <action id="RobotFramework.RunTest"
                     class="com.jakubjirak.robotframework.execution.actions.RunTestAction"
                     text="Run Test"
-                    description="Run Robot Framework test"
+                    description="Run the Robot Framework test under the caret, or the whole suite"
                     icon="AllIcons.Actions.Execute">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift F10"/>
             </action>
-            
-            <action id="RobotFramework.DebugTest"
+
+            <action id="RobotFramework.RunTestWithDebugLog"
                     class="com.jakubjirak.robotframework.execution.actions.DebugTestAction"
-                    text="Debug Test"
-                    description="Debug Robot Framework test"
+                    text="Run Test with DEBUG Log"
+                    description="Run with --loglevel DEBUG so the log records every keyword argument"
                     icon="AllIcons.Actions.StartDebugger">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift F9"/>
             </action>
-            
-            <separator/>
-            
-            <action id="RobotFramework.OpenREPL"
-                    class="com.jakubjirak.robotframework.ui.actions.OpenReplAction"
-                    text="Open Interactive REPL"
-                    description="Open Robot Framework interactive console"
-                    icon="AllIcons.Nodes.Console"/>
-            
-            <action id="RobotFramework.OpenWebInspector"
-                    class="com.jakubjirak.robotframework.ui.actions.OpenWebInspectorAction"
-                    text="Open Web Inspector"
-                    description="Open Web Inspector for locator generation"
-                    icon="AllIcons.General.InspectionsEye"/>
 
             <separator/>
+
+            <action id="RobotFramework.GenerateKeywordMenu"
+                    class="com.jakubjirak.robotframework.editor.actions.GenerateKeywordAction"
+                    text="Generate Keyword"
+                    description="Generate a user keyword skeleton in the Keywords section"
+                    icon="AllIcons.Actions.IntentionBulb"/>
 
             <action id="RobotFramework.FormatFile"
                     class="com.jakubjirak.robotframework.editor.actions.FormatRobotFileAction"
@@ -347,6 +326,28 @@
     </extensions>
 
     <change-notes><![CDATA[
+        <h3>2026.6.0 — Real Test Execution</h3>
+        <ul>
+            <li><b>Test execution actually runs your tests.</b> The previous run configuration ignored every setting and
+                executed <code>robot --version</code>. It now builds a real command line: suite or directory,
+                <code>--test</code>, <code>--include</code>/<code>--exclude</code>, <code>--outputdir</code>, extra
+                arguments, interpreter and working directory, started as <code>&lt;interpreter&gt; -m robot</code> with an
+                argument list so nothing passes through a shell</li>
+            <li><b>Run gutter icons</b> — every test case and task gets a Run icon</li>
+            <li><b>Run from context</b> — Run Test (Ctrl+Shift+F10) runs the test under the caret, or the whole suite;
+                right-click and the project view work too</li>
+            <li><b>Run with DEBUG log</b> (Ctrl+Shift+F9) — re-runs with <code>--loglevel DEBUG</code></li>
+            <li><b>Generate Keyword</b> now works — it takes the keyword call under the caret, creates the
+                <code>*** Keywords ***</code> section when missing, and places the caret on the generated step</li>
+            <li><b>Suite settings are highlighted</b> — <code>Library</code>, <code>Test Tags</code>, <code>Suite Setup</code>
+                and friends were rendered as plain text</li>
+            <li><b>Variable types are visible</b> — the RF 7.3 type annotation fell back to a colour the IntelliJ Light
+                scheme leaves unstyled, so it looked identical to the variable name</li>
+            <li><b>Removed placeholder features</b> — the "Interactive REPL" opened a message box, the "Web Inspector" and
+                "Test Results" tool windows were static labels. They are gone rather than pretending; test output now goes
+                to the normal run console</li>
+        </ul>
+
         <h3>2026.5.0 — Robot Framework 7.4 Syntax</h3>
         <ul>
             <li><b>GROUP blocks (RF 7.2)</b> — highlighting, folding, completion, live template and END matching</li>
@@ -381,18 +382,5 @@
             <li><b>Freemium licensing</b> — Added product-descriptor for JetBrains Marketplace freemium model (code: PROBOTFRAMEWORK)</li>
         </ul>
 
-        <h3>What's New</h3>
-        <ul>
-            <li><b>Intelligent Code Completion</b> - Context-aware suggestions for keywords, variables, and library imports</li>
-            <li><b>Go-To Navigation</b> - Jump to keyword definitions, find references, and view project structure</li>
-            <li><b>Step-Through Debugger</b> - Debug Robot Framework tests with breakpoints, variable inspection, and conditional breakpoints</li>
-            <li><b>Interactive REPL</b> - Test keywords in real time without running full test suites</li>
-            <li><b>Web Inspector</b> - Built-in browser element inspector for Selenium-based test locator generation</li>
-            <li><b>Syntax Highlighting</b> - Full syntax highlighting for Robot Framework 7+ keywords, variables, and sections</li>
-            <li><b>Rename Refactoring</b> - Safely rename keywords across all files with normalized matching</li>
-            <li><b>Code Inspections</b> - Detect issues like long test names, empty test cases, and undefined keywords</li>
-            <li><b>Performance Profiler</b> - Profile test execution to find slow keywords and optimize test suites</li>
-            <li><b>Live Templates</b> - Quick insertion of common Robot Framework patterns and structures</li>
-        </ul>
     ]]></change-notes>
 </idea-plugin>

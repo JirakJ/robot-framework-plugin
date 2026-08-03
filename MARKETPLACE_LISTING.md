@@ -8,15 +8,15 @@
 |-------------|----------------------------------------|
 | **Name**    | Robot Framework Professional           |
 | **Plugin ID** | `com.jakubjirak.robotframework`     |
-| **Version** | 2026.5.0                               |
+| **Version** | 2026.6.0                               |
 | **Category** | Test Automation / Languages & Frameworks |
-| **Tags**    | Robot Framework, Test Automation, RPA, REPL, Debugging |
+| **Tags**    | Robot Framework, Test Automation, RPA, Test Runner, Inspections |
 
 ---
 
 ## 🎯 Short Description
 
-> Full-featured Robot Framework IDE support — syntax highlighting, smart completion, navigation, debugging with breakpoints, interactive REPL, web inspector, and live templates. (175 chars)
+> Robot Framework 7.4 IDE support — syntax highlighting, smart completion, navigation, inspections with one-click migration fixes, a formatter, and test execution from the gutter.
 
 ---
 
@@ -24,9 +24,9 @@
 
 ### 🤖 The Ultimate Robot Framework Experience for JetBrains IDEs
 
-**The Problem:** Robot Framework development in JetBrains IDEs lacks proper language support. Developers struggle with plain-text editing, no navigation, no completion, and no integrated debugging — forcing constant context-switching.
+**The Problem:** Robot Framework development in JetBrains IDEs lacks proper language support. Developers struggle with plain-text editing, no navigation, no completion, and no way to run a single test without leaving the IDE.
 
-**The Solution:** Robot Framework Professional brings full language intelligence to your favorite JetBrains IDE. From syntax highlighting and smart completion to a visual debugger with conditional breakpoints, everything is designed to make Robot Framework development fast and productive.
+**The Solution:** Robot Framework Professional brings full language intelligence to your favorite JetBrains IDE — Robot Framework 7.4 syntax, smart completion, navigation, inspections that migrate deprecated syntax for you, a formatter, and test execution straight from the editor gutter.
 
 ---
 
@@ -52,15 +52,21 @@
 - 🍞 **Breadcrumbs** — Contextual breadcrumb navigation in the editor
 - ⚠️ **Inspections** — Undefined keywords, undefined variables, duplicate definitions, missing resources, test name length
 - ✏️ **Rename Refactoring** — Safe rename across all references
-- ▶️ **Basic Test Execution** — Run configurations for Robot Framework tests
+- ▶️ **Test Execution** — Run icon on every test case; run configurations with `--test`, tag filters, output directory, extra arguments, interpreter and working directory
+- 🐞 **Run with DEBUG log** — Re-run with `--loglevel DEBUG` when a failure needs the detail
+- 🛠️ **Generate Keyword** — Turn the keyword call under the caret into a skeleton
 
 #### ⭐ Pro Tier
 
-- 🐛 **Advanced Debugger** — Step-through debugging with conditional breakpoints
-- 📊 **Performance Profiler** — Identify slow keywords and optimize test execution time
-- 🌐 **Web Inspector** — Inspect web elements directly from the IDE for Selenium/Browser Library tests
-- 💻 **Interactive REPL** — Execute Robot Framework keywords interactively for rapid prototyping
-- ⚡ **Parallel Test Execution** — Support for parallel test runs and result aggregation
+> **Open decision — the paid tier currently has no exclusive features.**
+> The previously listed Pro features (step-through debugger, performance profiler,
+> web inspector, interactive REPL, parallel execution) were never implemented; the
+> code behind them was a message box and two static labels, removed in 2026.6.0.
+> Either build one of them for real or move the plugin to a single free tier before
+> advertising a paid tier again. Robot Framework has no debug protocol an IDE can
+> attach to, so a genuine "debugger" would mean shipping a listener-based runner;
+> a real REPL would mean integrating an external package such as
+> `robotframework-interactive`.
 
 ---
 
@@ -68,8 +74,8 @@
 
 | Tier     | Price           | Highlights                                        |
 |----------|-----------------|---------------------------------------------------|
-| **Free** | $0              | Syntax, completion, navigation, inspections, run configs |
-| **Pro**  | Paid (see Marketplace) | Debugger, profiler, web inspector, REPL, parallel execution |
+| **Free** | $0              | Everything the plugin currently does |
+| **Pro**  | Paid (see Marketplace) | **Nothing exclusive yet — see the open decision above** |
 
 ---
 
@@ -86,7 +92,7 @@
 
 | Requirement        | Value                    |
 |--------------------|--------------------------|
-| **Minimum IDE Build** | 232 (IntelliJ 2023.2+) |
+| **Minimum IDE Build** | 242 (IntelliJ 2024.2+) |
 | **Java Version**   | 17+                      |
 | **Runtime**        | Robot Framework installed (for test execution) |
 
@@ -99,7 +105,7 @@
 3. **Start typing** to see smart code completion for keywords and variables
 4. **Navigate** using Go to Declaration (Ctrl+Click) and Find References
 5. **Run tests** using the built-in run configuration for Robot Framework
-6. **Debug** with breakpoints for step-through keyword execution (Pro)
+6. **Re-run with `--loglevel DEBUG`** (Ctrl+Shift+F9) when a failure needs the detail
 
 ---
 
@@ -110,9 +116,9 @@
 3. **Go to Declaration** — Navigation from keyword usage to its definition
 4. **Structure View** — Hierarchical tree showing test suites, test cases, and keywords
 5. **Inspections** — Inline warnings for undefined keywords, duplicate definitions, and missing resources
-6. **Debugger (Pro)** — Step-through debugging with conditional breakpoints and variable inspection
-7. **Interactive REPL (Pro)** — Live keyword execution console for rapid prototyping
-8. **Web Inspector (Pro)** — Browser element inspector integrated into the IDE
+6. **Test execution** — Run icon in the gutter and the run configuration form
+7. **Robot Framework 7.4 syntax** — GROUP, typed variables, Secret variables
+8. **One-click migration** — Deprecated syntax replaced from the intention popup
 
 ---
 
@@ -127,7 +133,7 @@
 
 ## 🔍 Keywords (SEO)
 
-`Robot Framework`, `test automation`, `RPA`, `keyword-driven testing`, `acceptance testing`, `REPL`, `debugger`, `Selenium`, `Browser Library`, `test execution`, `.robot files`, `RF 7`, `automation framework`, `QA tools`, `test debugging`
+`Robot Framework`, `test automation`, `RPA`, `keyword-driven testing`, `acceptance testing`, `test runner`, `GROUP`, `Selenium`, `Browser Library`, `test execution`, `.robot files`, `RF 7.4`, `automation framework`, `QA tools`, `robotidy`
 
 ---
 

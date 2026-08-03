@@ -1,13 +1,13 @@
 # Robot Framework
 
-Full-featured Robot Framework language support for JetBrains IDEs with syntax highlighting, code completion, navigation, inspections, test execution, and debugging capabilities.
+Robot Framework language support for JetBrains IDEs: syntax highlighting, code completion, navigation, inspections with one-click migration fixes, a formatter, and test execution from the editor gutter.
 
 Tracks the syntax of **Robot Framework 7.4**.
 
 ## Robot Framework 7.x syntax
 
 - **`GROUP` blocks** (RF 7.2) — highlighting, folding (`GROUP...END`), completion, `group` live template, and `END` matching
-- **Variable type conversion** (RF 7.3) — `${amount: int}`, `@{ids: list[int]}`, `&{m: dict[str, int]}`, unions and `Literal["UP", "DOWN"]` are highlighted with a dedicated colour, completed after the colon, and validated; `typedvar` live template
+- **Variable type conversion** (RF 7.3) — `${amount: int}`, `@{ids: list[int]}`, `&{m: dict[str, int]}`, unions and `Literal["UP", "DOWN"]` get their own colour, completion after the colon, and validation; `typedvar` live template
 - **Secret variables** (RF 7.4) — completion, `secret` live template, and an inspection that rejects literal secrets in `*** Variables ***`
 - **`VAR` statement** (RF 7.0, `SUITES` scope in 7.1) — scope and `separator=` completion, `var` live template, and a warning for a non-local `VAR` without a value (deprecated in RF 7.4)
 - **`WHILE` limits** — completion for `limit=`, `on_limit=`, `on_limit_message=`; `while` live template
@@ -32,10 +32,9 @@ Tracks the syntax of **Robot Framework 7.4**.
 - **Code formatter** — reformat a suite with `Ctrl+Alt+Shift+R`: canonical section headers, tabs → spaces, trimmed trailing whitespace, normalized blank lines (idempotent)
 - **Quality inspections + quick fixes** — duplicate test-case names, tab separators (fix: convert to spaces), trailing whitespace (fix: remove), unresolved `TODO`/`FIXME`/`XXX` markers, and unused suite variables
 - **Rename refactoring** — rename keywords with automatic propagation across files
-- **Run configurations** — create and execute Robot Framework test runs directly from the IDE
-- **Debug support** — debug tests with breakpoint support (Ctrl+Shift+F9)
-- **Interactive REPL** — open a Robot Framework interactive console
-- **Web Inspector** — visual element selection tool window for web testing
+- **Test execution** — Run icon in the gutter of every test case; run configurations with `--test`, `--include`/`--exclude`, `--outputdir`, extra arguments, interpreter and working directory
+- **Run with DEBUG log** — re-run with `--loglevel DEBUG` (Ctrl+Shift+F9) when a failure needs the detail
+- **Generate Keyword** — turns the keyword call under the caret into a skeleton in the `*** Keywords ***` section
 - **Live templates** — snippet support for common RF patterns
 - **Customizable colors** — configurable syntax highlighting via Color Settings page
 
@@ -59,13 +58,15 @@ Customize syntax highlighting colors via Settings → Editor → Color Scheme �
 ## Usage
 
 ### Run a Test
-Open a `.robot` file → right-click on a test case → **Run Test** (Ctrl+Shift+F10) or **Debug Test** (Ctrl+Shift+F9).
+Click the Run icon in the gutter next to a test case name, or press **Ctrl+Shift+F10** to run the test under the caret (the whole suite when the caret is outside a test). **Ctrl+Shift+F9** re-runs it with `--loglevel DEBUG`.
+
+Robot Framework is started as `<interpreter> -m robot` with an argument list — never through a shell — so paths and test names containing spaces or shell metacharacters are safe. Set the interpreter per configuration or globally under Settings → Tools → Robot Framework.
 
 ### Navigate to Keywords
 Place your cursor on any keyword and press **Ctrl+Click** (Cmd+Click on Mac) to jump to its definition. Works across files with normalized keyword matching.
 
 ### Generate Keywords
-Right-click in the editor → **Generate Keyword** to auto-generate a new keyword template.
+Put the caret on a keyword call that does not exist yet and choose **Generate Keyword** from the context menu. The skeleton is added to the `*** Keywords ***` section, which is created if the file has none.
 
 ### Format a Suite
 Open a `.robot`/`.resource` file → **Robot Framework → Format Robot File** (`Ctrl+Alt+Shift+R`), or right-click → **Format Robot File**. Indent size and header normalization are configurable under Settings → Tools → Robot Framework.
@@ -87,9 +88,6 @@ Open a `.robot`/`.resource` file → **Robot Framework → Format Robot File** (
 The capture kit (sample project, renderer and per-shot guide) lives in
 [`docs/screenshots`](docs/screenshots/SCREENSHOTS.md); regenerate with
 `python3 docs/screenshots/src/render.py`.
-
-### Use the Web Inspector
-Menu → Robot Framework → **Open Web Inspector** to launch the visual element selection tool for identifying web elements.
 
 ## Building from Source
 

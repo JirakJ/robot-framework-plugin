@@ -11,6 +11,9 @@ import com.jakubjirak.robotframework.analysis.RobotSyntax;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -29,6 +32,11 @@ public class RobotLexer extends LexerBase {
     private static final int STATE_COMMENTS_SECTION = 1;
     /** Lexing continues inside the values of a {@code [Tags]} setting. */
     private static final int STATE_TAGS = 2;
+    /** Lexing continues inside a {@code *** Settings ***} section. */
+    private static final int STATE_SETTINGS_SECTION = 4;
+
+    /** Suite settings, longest first, so "Test Tags" wins over a bare "Test". */
+    private static final List<String> SUITE_SETTINGS = buildSuiteSettings();
 
     private CharSequence buffer;
     private int bufferStart;
@@ -147,11 +155,13 @@ public class RobotLexer extends LexerBase {
 
         if (canonical == null) {
             setState(STATE_COMMENTS_SECTION, false);
+            setState(STATE_SETTINGS_SECTION, false);
             tokenType = RobotTokenTypes.SECTION_HEADER;
             return;
         }
 
         setState(STATE_COMMENTS_SECTION, "Comments".equals(canonical));
+        setState(STATE_SETTINGS_SECTION, "Settings".equals(canonical));
         setState(STATE_TAGS, false);
 
         switch (canonical) {
@@ -224,6 +234,18 @@ public class RobotLexer extends LexerBase {
     }
 
     private void lexWord() {
+        // A suite setting sits at the start of a line inside *** Settings *** and may
+        // contain a space, e.g. "Test Tags" or "Suite Teardown".
+        if (isInSettingsSection() && atLineStart(tokenStart)) {
+            int settingEnd = matchSuiteSetting();
+            if (settingEnd > tokenStart) {
+                tokenEnd = settingEnd;
+                setState(STATE_TAGS, false);
+                tokenType = RobotTokenTypes.SETTING;
+                return;
+            }
+        }
+
         int i = tokenStart;
         while (i < bufferEnd && !Character.isWhitespace(buffer.charAt(i))) {
             i++;
@@ -291,6 +313,43 @@ public class RobotLexer extends LexerBase {
         return from;
     }
 
+    /**
+     * Returns the offset just past a suite setting starting at the current token,
+     * or {@code tokenStart} when the line does not begin with one. The match must
+     * end at a cell boundary so a test named "Library Loads" is not mistaken for
+     * the {@code Library} setting.
+     */
+    private int matchSuiteSetting() {
+        for (String setting : SUITE_SETTINGS) {
+            int end = tokenStart + setting.length();
+            if (end > bufferEnd) {
+                continue;
+            }
+            if (!buffer.subSequence(tokenStart, end).toString().equalsIgnoreCase(setting)) {
+                continue;
+            }
+            if (end == bufferEnd) {
+                return end;
+            }
+            char next = buffer.charAt(end);
+            boolean cellBoundary = next == '\t' || next == '\n'
+                    || (next == ' ' && (end + 1 >= bufferEnd || buffer.charAt(end + 1) == ' '));
+            if (cellBoundary) {
+                return end;
+            }
+        }
+        return tokenStart;
+    }
+
+    private static List<String> buildSuiteSettings() {
+        List<String> settings = new ArrayList<>(RobotSyntax.SUITE_SETTINGS);
+        // Deprecated but still valid; the inspection tells the user to migrate.
+        settings.add("Force Tags");
+        settings.add("Default Tags");
+        settings.sort(Comparator.comparingInt(String::length).reversed());
+        return List.copyOf(settings);
+    }
+
     @Nullable
     private IElementType markerTokenType(String word) {
         if (!RobotSyntax.isMarker(word)) {
@@ -355,6 +414,10 @@ public class RobotLexer extends LexerBase {
 
     private boolean isInTagsContext() {
         return (state & STATE_TAGS) != 0;
+    }
+
+    private boolean isInSettingsSection() {
+        return (state & STATE_SETTINGS_SECTION) != 0;
     }
 
     private void setState(int flag, boolean enabled) {
