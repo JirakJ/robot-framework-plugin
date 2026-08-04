@@ -72,8 +72,13 @@
       Freemium: optional="true" means the licence is never checked at startup and
       every feature stays available without one. Buying a licence supports the
       plugin, it does not unlock anything.
+
+      release-date and release-version are a pair: the Marketplace rejects an
+      upload that reuses a release-version with a different release-date, so a
+      patch inside the 2026.6.x train keeps both values from 2026.6.0. Bump them
+      together when the next feature release goes out.
     -->
-    <product-descriptor code="PROBOTFRAMEWORK" release-date="20260804" release-version="20266" optional="true"/>
+    <product-descriptor code="PROBOTFRAMEWORK" release-date="20260803" release-version="20266" optional="true"/>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Language Definition -->
