@@ -2,14 +2,15 @@
 
 All notable changes to the Robot Framework plugin will be documented in this file.
 
+## [2026.6.2] - 2026-08-04
+
+### Fixed
+- **Restored the freemium `<product-descriptor>`** that 2026.6.1 removed. Removing it was based on a wrong reading of the model: with `optional="true"` Robot Framework Professional is *freemium*, meaning the licence is never checked at IDE start and every feature is available to everyone. Nothing was ever locked behind it, so there was nothing to "free up". A monetized Marketplace listing also expects the descriptor to be present in every uploaded version.
+
 ## [2026.6.1] - 2026-08-04
 
 ### Changed
-- **The plugin is now free.** The `<product-descriptor>` (freemium, code `PROBOTFRAMEWORK`) is removed, so every feature is available to everyone. The paid tier had been advertising a step-through debugger, a performance profiler, a web inspector, an interactive REPL and parallel execution; none of them were ever implemented, and removing the placeholder code in 2026.6.0 left nothing behind the paywall. No feature was taken away by this change — there was never any code gated on a licence.
-
-> Removing the descriptor is only the plugin side. The Marketplace listing keeps its
-> own pricing configuration: the **Pricing** tab has to be switched to Free in the
-> vendor portal, and JetBrains has to approve a paid → free move.
+- Removed the `<product-descriptor>`. **Superseded by 2026.6.2, which puts it back** — see above. No functional change either way: no code in this plugin has ever been gated on a licence check.
 
 ## [2026.6.0] - 2026-08-03
 

@@ -68,6 +68,13 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
 
+    <!--
+      Freemium: optional="true" means the licence is never checked at startup and
+      every feature stays available without one. Buying a licence supports the
+      plugin, it does not unlock anything.
+    -->
+    <product-descriptor code="PROBOTFRAMEWORK" release-date="20260804" release-version="20266" optional="true"/>
+
     <extensions defaultExtensionNs="com.intellij">
         <!-- Language Definition -->
         <fileType name="Robot Framework"
@@ -324,12 +331,12 @@
     </extensions>
 
     <change-notes><![CDATA[
-        <h3>2026.6.1 — Free</h3>
+        <h3>2026.6.2 — Freemium Descriptor Restored</h3>
         <ul>
-            <li><b>The plugin is now free.</b> Every feature it has is available to everyone; the freemium
-                product descriptor is gone. The paid tier had been advertising a debugger, a profiler, a REPL,
-                a web inspector and parallel execution that were never implemented — those were removed in
-                2026.6.0, which left nothing behind the paywall</li>
+            <li><b>Reverts 2026.6.1.</b> The freemium <code>product-descriptor</code> is back. It was removed on
+                the mistaken assumption that it gated features — it never did: with <code>optional="true"</code>
+                the licence is not checked and every feature is available to everyone, which is exactly the
+                intended model. A monetized listing also requires the descriptor to be present</li>
         </ul>
 
         <h3>2026.6.0 — Real Test Execution</h3>

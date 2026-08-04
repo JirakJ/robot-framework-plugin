@@ -8,7 +8,7 @@
 |-------------|----------------------------------------|
 | **Name**    | Robot Framework Professional           |
 | **Plugin ID** | `com.jakubjirak.robotframework`     |
-| **Version** | 2026.6.1                               |
+| **Version** | 2026.6.2                               |
 | **Category** | Test Automation / Languages & Frameworks |
 | **Tags**    | Robot Framework, Test Automation, RPA, Test Runner, Inspections |
 
@@ -60,18 +60,24 @@
 
 ### 💰 Pricing Model
 
-**Free.** There is no paid tier and no locked feature.
+**Freemium** — `<product-descriptor code="PROBOTFRAMEWORK" optional="true"/>`.
 
-The plugin used to be listed as freemium with a Pro tier promising a step-through
-debugger, a performance profiler, a web inspector, an interactive REPL and
-parallel execution. None of those were ever implemented — the code behind them
-was a message box and two static labels — so they were removed in 2026.6.0 and
-the freemium product descriptor was dropped in 2026.6.1.
+`optional="true"` means the licence is never checked when the IDE starts and no
+code path is gated on one, so **every feature is available to everyone**. A
+subscription supports the plugin; it does not unlock anything.
 
-If a paid tier is ever reintroduced it needs a feature that actually exists
-first. Robot Framework has no debug protocol an IDE can attach to, so a genuine
-"debugger" would mean shipping a listener-based runner; a real REPL would mean
-integrating an external package such as `robotframework-interactive`.
+| Tier                | Price                  | What you get                          |
+|---------------------|------------------------|---------------------------------------|
+| **Without licence** | $0                     | Every feature the plugin has          |
+| **Subscription**    | See Marketplace        | The same, plus supporting development |
+
+The listing used to advertise Pro-only features — a step-through debugger, a
+performance profiler, a web inspector, an interactive REPL, parallel execution.
+None of them existed; the code behind them was a message box and two static
+labels, removed in 2026.6.0. Should an exclusive paid feature be introduced
+later, note that Robot Framework has no debug protocol an IDE can attach to, so
+a genuine "debugger" would mean shipping a listener-based runner, and a real
+REPL would mean integrating a package such as `robotframework-interactive`.
 
 ---
 
@@ -169,7 +175,7 @@ integrating an external package such as `robotframework-interactive`.
 - [ ] Screenshots (1280×800 minimum) captured for all key features
 - [ ] Short description within 255-character limit
 - [ ] Full description reviewed and proofread
-- [ ] Marketplace **Pricing** tab switched to Free (the descriptor removal alone does not change the store listing; JetBrains has to approve a paid → free move)
+- [x] Pricing tiers configured in the JetBrains Marketplace portal (freemium, `PROBOTFRAMEWORK`)
 - [ ] Plugin signed with JetBrains Marketplace certificate
 - [ ] License agreement (EULA) uploaded
 - [ ] CHANGELOG.md up to date with latest version notes
