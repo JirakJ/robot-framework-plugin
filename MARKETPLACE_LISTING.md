@@ -8,7 +8,7 @@
 |-------------|----------------------------------------|
 | **Name**    | Robot Framework Professional           |
 | **Plugin ID** | `com.jakubjirak.robotframework`     |
-| **Version** | 2026.6.0                               |
+| **Version** | 2026.6.1                               |
 | **Category** | Test Automation / Languages & Frameworks |
 | **Tags**    | Robot Framework, Test Automation, RPA, Test Runner, Inspections |
 
@@ -40,7 +40,7 @@
 - 📦 **VAR statement** (RF 7.0/7.1) — completion for every scope including `SUITES`
 - 🧭 **Migration fixes** — one-click replacements for `[Return]`, `Force Tags`, `WITH NAME`, singular section headers, and the deprecated loop keywords
 
-#### 🆓 Free Tier
+#### ✨ Everything, for everyone
 
 - 🎨 **Syntax Highlighting** — Markers, typed variables, tags, section headers, and comments with full semantic coloring
 - 🧠 **Smart Code Completion** — RF 7.x control structures, conversion types, BuiltIn, Collections, and String library completions
@@ -56,26 +56,22 @@
 - 🐞 **Run with DEBUG log** — Re-run with `--loglevel DEBUG` when a failure needs the detail
 - 🛠️ **Generate Keyword** — Turn the keyword call under the caret into a skeleton
 
-#### ⭐ Pro Tier
-
-> **Open decision — the paid tier currently has no exclusive features.**
-> The previously listed Pro features (step-through debugger, performance profiler,
-> web inspector, interactive REPL, parallel execution) were never implemented; the
-> code behind them was a message box and two static labels, removed in 2026.6.0.
-> Either build one of them for real or move the plugin to a single free tier before
-> advertising a paid tier again. Robot Framework has no debug protocol an IDE can
-> attach to, so a genuine "debugger" would mean shipping a listener-based runner;
-> a real REPL would mean integrating an external package such as
-> `robotframework-interactive`.
-
 ---
 
 ### 💰 Pricing Model
 
-| Tier     | Price           | Highlights                                        |
-|----------|-----------------|---------------------------------------------------|
-| **Free** | $0              | Everything the plugin currently does |
-| **Pro**  | Paid (see Marketplace) | **Nothing exclusive yet — see the open decision above** |
+**Free.** There is no paid tier and no locked feature.
+
+The plugin used to be listed as freemium with a Pro tier promising a step-through
+debugger, a performance profiler, a web inspector, an interactive REPL and
+parallel execution. None of those were ever implemented — the code behind them
+was a message box and two static labels — so they were removed in 2026.6.0 and
+the freemium product descriptor was dropped in 2026.6.1.
+
+If a paid tier is ever reintroduced it needs a feature that actually exists
+first. Robot Framework has no debug protocol an IDE can attach to, so a genuine
+"debugger" would mean shipping a listener-based runner; a real REPL would mean
+integrating an external package such as `robotframework-interactive`.
 
 ---
 
@@ -173,8 +169,7 @@
 - [ ] Screenshots (1280×800 minimum) captured for all key features
 - [ ] Short description within 255-character limit
 - [ ] Full description reviewed and proofread
-- [ ] Pricing tiers configured in JetBrains Marketplace portal
-- [ ] Product descriptor code `PROBOTFRAMEWORK` verified
+- [ ] Marketplace **Pricing** tab switched to Free (the descriptor removal alone does not change the store listing; JetBrains has to approve a paid → free move)
 - [ ] Plugin signed with JetBrains Marketplace certificate
 - [ ] License agreement (EULA) uploaded
 - [ ] CHANGELOG.md up to date with latest version notes

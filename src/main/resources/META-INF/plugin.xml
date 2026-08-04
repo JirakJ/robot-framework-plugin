@@ -68,8 +68,6 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
 
-    <product-descriptor code="PROBOTFRAMEWORK" release-date="20260803" release-version="20266" optional="true"/>
-
     <extensions defaultExtensionNs="com.intellij">
         <!-- Language Definition -->
         <fileType name="Robot Framework"
@@ -326,6 +324,14 @@
     </extensions>
 
     <change-notes><![CDATA[
+        <h3>2026.6.1 — Free</h3>
+        <ul>
+            <li><b>The plugin is now free.</b> Every feature it has is available to everyone; the freemium
+                product descriptor is gone. The paid tier had been advertising a debugger, a profiler, a REPL,
+                a web inspector and parallel execution that were never implemented — those were removed in
+                2026.6.0, which left nothing behind the paywall</li>
+        </ul>
+
         <h3>2026.6.0 — Real Test Execution</h3>
         <ul>
             <li><b>Test execution actually runs your tests.</b> The previous run configuration ignored every setting and
