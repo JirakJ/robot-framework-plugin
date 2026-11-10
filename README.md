@@ -1,5 +1,9 @@
 # Robot Framework
 
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE) ![Version](https://img.shields.io/badge/version-2026.8.0-green)
+
+> **Free & open source.** Since 2026.8.0 the plugin is completely free — every feature is unlocked for everyone, no license needed — and the source code is available under the Apache License 2.0.
+
 Robot Framework language support for JetBrains IDEs: syntax highlighting, code completion, navigation, inspections with one-click migration fixes, a formatter, and test execution from the editor gutter.
 
 Tracks the syntax of **Robot Framework 7.4**.
@@ -95,6 +99,10 @@ The capture kit (sample project, renderer and per-shot guide) lives in
 ./gradlew buildPlugin
 ```
 
+## Contributing
+
+Issues and pull requests are welcome at https://github.com/JirakJ/robot-framework-plugin.
+
 ## License
 
-Copyright © 2026 Jakub Jirák. All rights reserved.
+Copyright 2026 Jakub Jirák. Licensed under the [Apache License, Version 2.0](LICENSE).
