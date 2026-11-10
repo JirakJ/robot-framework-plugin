@@ -58,26 +58,10 @@
 
 ---
 
-### 💰 Pricing Model
+### 💰 Pricing
 
-**Freemium** — `<product-descriptor code="PROBOTFRAMEWORK" optional="true"/>`.
-
-`optional="true"` means the licence is never checked when the IDE starts and no
-code path is gated on one, so **every feature is available to everyone**. A
-subscription supports the plugin; it does not unlock anything.
-
-| Tier                | Price                  | What you get                          |
-|---------------------|------------------------|---------------------------------------|
-| **Without licence** | $0                     | Every feature the plugin has          |
-| **Subscription**    | See Marketplace        | The same, plus supporting development |
-
-The listing used to advertise Pro-only features — a step-through debugger, a
-performance profiler, a web inspector, an interactive REPL, parallel execution.
-None of them existed; the code behind them was a message box and two static
-labels, removed in 2026.6.0. Should an exclusive paid feature be introduced
-later, note that Robot Framework has no debug protocol an IDE can attach to, so
-a genuine "debugger" would mean shipping a listener-based runner, and a real
-REPL would mean integrating a package such as `robotframework-interactive`.
+Robot Framework Professional is **completely free and open source** (Apache License 2.0).
+Every feature is available to everyone — no license or subscription needed.
 
 ---
 
@@ -175,11 +159,8 @@ REPL would mean integrating a package such as `robotframework-interactive`.
 - [ ] Screenshots (1280×800 minimum) captured for all key features
 - [ ] Short description within 255-character limit
 - [ ] Full description reviewed and proofread
-- [x] Pricing tiers configured in the JetBrains Marketplace portal (freemium, `PROBOTFRAMEWORK`)
 - [ ] Plugin signed with JetBrains Marketplace certificate
-- [ ] License agreement (EULA) uploaded
 - [ ] CHANGELOG.md up to date with latest version notes
 - [ ] Compatibility tested on minimum build (232)
-- [ ] Free vs Pro feature gating verified
 - [ ] Robot Framework 7+ keyword library coverage validated
 - [ ] Support email monitored and responsive

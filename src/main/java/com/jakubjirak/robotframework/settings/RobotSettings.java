@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2024-2025 Jakub Jirak. All rights reserved.
- * Licensed under the terms of the project license.
+ * Copyright (c) 2024-2025 Jakub Jirak.
+ * Licensed under the Apache License, Version 2.0. See LICENSE for details.
  */
 package com.jakubjirak.robotframework.settings;
 

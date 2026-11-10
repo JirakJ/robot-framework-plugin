@@ -2,6 +2,12 @@
 
 All notable changes to the Robot Framework plugin will be documented in this file.
 
+## [2026.8.0] - 2026-11-10
+
+### Changed
+- The plugin is now completely free — all features unlocked, no license needed.
+- Source code is now open source under the Apache License 2.0: https://github.com/JirakJ/robot-framework-plugin
+
 ## [2026.6.2] - 2026-08-04
 
 ### Fixed
