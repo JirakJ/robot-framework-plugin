@@ -4,6 +4,8 @@ All notable changes to the Robot Framework plugin will be documented in this fil
 
 ## [Unreleased]
 
+## [2026.9.0] - 2026-11-11
+
 ### Fixed
 - The one-week feedback prompt referenced an unregistered notification group and failed when it fired; it now uses the registered group.
 
