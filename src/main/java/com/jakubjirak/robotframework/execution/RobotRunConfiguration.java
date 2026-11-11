@@ -73,18 +73,36 @@ public class RobotRunConfiguration extends RunConfigurationBase<RunConfiguration
 
     @Override
     public void checkConfiguration() throws RuntimeConfigurationException {
+        String error = validationError(suitePath, workingDirectory, interpreterPath);
+        if (error != null) {
+            throw new RuntimeConfigurationError(error);
+        }
+    }
+
+    /**
+     * Returns the first problem with the given paths, or {@code null} when the configuration can run.
+     * Empty working directory / interpreter mean "use the default" and are valid.
+     */
+    @Nullable
+    static String validationError(String suitePath, String workingDirectory, String interpreterPath) {
         if (suitePath.isEmpty()) {
-            throw new RuntimeConfigurationError("Set the test suite file or directory to run.");
+            return "Set the test suite file or directory to run.";
         }
         if (!exists(suitePath)) {
-            throw new RuntimeConfigurationError("Test suite not found: " + suitePath);
+            return "Test suite not found: " + suitePath;
         }
         if (!workingDirectory.isEmpty() && !exists(workingDirectory)) {
-            throw new RuntimeConfigurationError("Working directory not found: " + workingDirectory);
+            return "Working directory not found: " + workingDirectory;
         }
         if (!interpreterPath.isEmpty() && !exists(interpreterPath)) {
-            throw new RuntimeConfigurationError("Python interpreter not found: " + interpreterPath);
+            return "Python interpreter not found: " + interpreterPath;
         }
+        return null;
+    }
+
+    /** The configuration's own value when set, otherwise the project-level default. */
+    static String orDefault(String explicit, String fallback) {
+        return explicit.isEmpty() ? fallback : explicit;
     }
 
     private static boolean exists(String path) {
@@ -98,9 +116,9 @@ public class RobotRunConfiguration extends RunConfigurationBase<RunConfiguration
     /** Command line parameters for this configuration, with project settings as defaults. */
     public RobotCommandBuilder.Params toParams() {
         RobotSettings settings = RobotSettings.getInstance(getProject());
-        String interpreter = interpreterPath.isEmpty() ? settings.getInterpreterPath() : interpreterPath;
-        String output = outputDirectory.isEmpty() ? settings.getOutputDirectory() : outputDirectory;
-        String extra = extraArguments.isEmpty() ? settings.getRobotArgs() : extraArguments;
+        String interpreter = orDefault(interpreterPath, settings.getInterpreterPath());
+        String output = orDefault(outputDirectory, settings.getOutputDirectory());
+        String extra = orDefault(extraArguments, settings.getRobotArgs());
 
         return new RobotCommandBuilder.Params()
                 .interpreterPath(interpreter)

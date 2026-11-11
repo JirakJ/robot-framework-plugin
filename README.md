@@ -25,7 +25,7 @@ Tracks the syntax of **Robot Framework 7.4**.
 - **Smart code completion** — auto-complete for RF 7.x control structures, 40+ BuiltIn library keywords, Collections & String library keywords, built-in variables, settings section keywords, conversion types, and user-defined keywords/variables
 - **Go to declaration** — Ctrl+Click (Cmd+Click on Mac) navigation to keyword and variable definitions with normalized matching (handles `My Keyword`, `my_keyword`, `MyKeyword`)
 - **Find references** — locate all usages of keywords and variables across your project
-- **Inline documentation** — hover documentation for keywords with parameter hints and inlay providers
+- **Inline documentation** — hover documentation for keywords, plus `arg0:`, `arg1:` inlay hints for positional arguments
 - **Code folding** — collapse/expand test cases, keywords, and section blocks
 - **Structure view** — hierarchical overview of `.robot` file structure with PSI-based model
 - **Breadcrumbs navigation** — path-based navigation in the editor
