@@ -46,7 +46,7 @@
 - 🧠 **Smart Code Completion** — RF 7.x control structures, conversion types, BuiltIn, Collections, and String library completions
 - 🔗 **Go to Declaration** — Navigate to keyword definitions with normalized matching
 - 🔍 **Find References** — Locate all usages of keywords and variables across your project
-- 📖 **Inline Documentation** — Hover documentation with parameter hints
+- 📖 **Inline Documentation** — Hover documentation for keywords
 - 📁 **Code Folding** — Collapse test cases, keywords, and sections
 - 🏗️ **Structure View** — Hierarchical outline of test suites, test cases, and keywords
 - 🍞 **Breadcrumbs** — Contextual breadcrumb navigation in the editor

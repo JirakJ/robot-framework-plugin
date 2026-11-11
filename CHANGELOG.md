@@ -2,6 +2,15 @@
 
 All notable changes to the Robot Framework plugin will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+- The one-week feedback prompt referenced an unregistered notification group and failed when it fired; it now uses the registered group.
+
+### Removed
+- Settings that had no effect: "Web inspector browser" and "Enable auto-import for libraries".
+- An internal placeholder project service that reported hard-coded values.
+
 ## [2026.8.0] - 2026-11-10
 
 ### Changed

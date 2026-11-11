@@ -28,8 +28,6 @@ public class RobotSettingsConfigurable implements SearchableConfigurable {
     private JBTextField interpreterPathField;
     private JBTextField robotArgsField;
     private JBTextField outputDirectoryField;
-    private JBTextField browserNameField;
-    private JBCheckBox enableAutoImportCheckBox;
     private JBTextField formatterIndentSizeField;
     private JBCheckBox formatterNormalizeHeadersCheckBox;
     private JPanel myPanel;
@@ -53,8 +51,6 @@ public class RobotSettingsConfigurable implements SearchableConfigurable {
         interpreterPathField = new JBTextField();
         robotArgsField = new JBTextField();
         outputDirectoryField = new JBTextField();
-        browserNameField = new JBTextField();
-        enableAutoImportCheckBox = new JBCheckBox("Enable auto-import for libraries");
         formatterIndentSizeField = new JBTextField();
         formatterNormalizeHeadersCheckBox = new JBCheckBox("Normalize section headers (e.g. *** test cases *** → *** Test Cases ***)");
 
@@ -62,8 +58,6 @@ public class RobotSettingsConfigurable implements SearchableConfigurable {
                 .addLabeledComponent(new JBLabel("Python interpreter path:"), interpreterPathField, 1, false)
                 .addLabeledComponent(new JBLabel("Robot Framework arguments:"), robotArgsField, 1, false)
                 .addLabeledComponent(new JBLabel("Output directory:"), outputDirectoryField, 1, false)
-                .addLabeledComponent(new JBLabel("Web inspector browser:"), browserNameField, 1, false)
-                .addComponent(enableAutoImportCheckBox, 1)
                 .addSeparator()
                 .addComponent(new JBLabel("Formatter"))
                 .addLabeledComponent(new JBLabel("Indent size (spaces):"), formatterIndentSizeField, 1, false)
@@ -81,17 +75,26 @@ public class RobotSettingsConfigurable implements SearchableConfigurable {
         return !Objects.equals(interpreterPathField.getText(), settings.getInterpreterPath()) ||
                 !Objects.equals(robotArgsField.getText(), settings.getRobotArgs()) ||
                 !Objects.equals(outputDirectoryField.getText(), settings.getOutputDirectory()) ||
-                !Objects.equals(browserNameField.getText(), settings.getBrowserName()) ||
-                enableAutoImportCheckBox.isSelected() != settings.isEnableAutoImport() ||
                 parseIndentSize() != settings.getFormatterIndentSize() ||
                 formatterNormalizeHeadersCheckBox.isSelected() != settings.isFormatterNormalizeHeaders();
     }
 
     private int parseIndentSize() {
+        return parseIndentSize(formatterIndentSizeField.getText(), RobotSettings.getInstance(project).getFormatterIndentSize());
+    }
+
+    /**
+     * Parses the indent-size field. Values below 2 are raised to 2 (Robot Framework needs at least two
+     * spaces as a cell separator); non-numeric input keeps {@code fallback}.
+     */
+    static int parseIndentSize(@Nullable String text, int fallback) {
+        if (text == null) {
+            return fallback;
+        }
         try {
-            return Math.max(2, Integer.parseInt(formatterIndentSizeField.getText().trim()));
+            return Math.max(2, Integer.parseInt(text.trim()));
         } catch (NumberFormatException ex) {
-            return RobotSettings.getInstance(project).getFormatterIndentSize();
+            return fallback;
         }
     }
 
@@ -101,8 +104,6 @@ public class RobotSettingsConfigurable implements SearchableConfigurable {
         settings.setInterpreterPath(interpreterPathField.getText());
         settings.setRobotArgs(robotArgsField.getText());
         settings.setOutputDirectory(outputDirectoryField.getText());
-        settings.setBrowserName(browserNameField.getText());
-        settings.setEnableAutoImport(enableAutoImportCheckBox.isSelected());
         settings.setFormatterIndentSize(parseIndentSize());
         settings.setFormatterNormalizeHeaders(formatterNormalizeHeadersCheckBox.isSelected());
     }
@@ -113,8 +114,6 @@ public class RobotSettingsConfigurable implements SearchableConfigurable {
         interpreterPathField.setText(settings.getInterpreterPath());
         robotArgsField.setText(settings.getRobotArgs());
         outputDirectoryField.setText(settings.getOutputDirectory());
-        browserNameField.setText(settings.getBrowserName());
-        enableAutoImportCheckBox.setSelected(settings.isEnableAutoImport());
         formatterIndentSizeField.setText(String.valueOf(settings.getFormatterIndentSize()));
         formatterNormalizeHeadersCheckBox.setSelected(settings.isFormatterNormalizeHeaders());
     }
