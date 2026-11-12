@@ -1,6 +1,6 @@
 # Screenshots
 
-Marketplace media for **Robot Framework Professional**.
+Marketplace media for the **Robot Framework** plugin.
 
 - **[SCREENSHOTS.md](SCREENSHOTS.md)** — capture environment, per-shot guide, and asset checklist.
 - **[sample-project/](sample-project)** — ready-to-open files that trigger every feature:

@@ -1,4 +1,4 @@
-# JetBrains Marketplace Listing — Robot Framework Professional
+# JetBrains Marketplace Listing — Robot Framework
 
 ---
 
@@ -6,7 +6,7 @@
 
 | Field       | Value                                  |
 |-------------|----------------------------------------|
-| **Name**    | Robot Framework Professional           |
+| **Name**    | Robot Framework           |
 | **Plugin ID** | `com.jakubjirak.robotframework`     |
 | **Version** | 2026.6.2                               |
 | **Category** | Test Automation / Languages & Frameworks |
@@ -26,7 +26,7 @@
 
 **The Problem:** Robot Framework development in JetBrains IDEs lacks proper language support. Developers struggle with plain-text editing, no navigation, no completion, and no way to run a single test without leaving the IDE.
 
-**The Solution:** Robot Framework Professional brings full language intelligence to your favorite JetBrains IDE — Robot Framework 7.4 syntax, smart completion, navigation, inspections that migrate deprecated syntax for you, a formatter, and test execution straight from the editor gutter.
+**The Solution:** Robot Framework brings full language intelligence to your favorite JetBrains IDE — Robot Framework 7.4 syntax, smart completion, navigation, inspections that migrate deprecated syntax for you, a formatter, and test execution straight from the editor gutter.
 
 ---
 
@@ -60,7 +60,7 @@
 
 ### 💰 Pricing
 
-Robot Framework Professional is **completely free and open source** (Apache License 2.0).
+Robot Framework is **completely free and open source** (Apache License 2.0).
 Every feature is available to everyone — no license or subscription needed.
 
 ---
