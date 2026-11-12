@@ -56,4 +56,12 @@ class SampleProjectTest {
                 RobotFinding.Category.UNUSED_VARIABLE);
         assertEquals(expected, categoriesOf("rf74_migration.robot"));
     }
+
+    @Test
+    @DisplayName("the formatter turns messy_suite.robot into exactly the formatted fixture")
+    void formatterSampleMatchesScreenshot() throws IOException {
+        String messy = Files.readString(SAMPLES.resolve("messy_suite.robot"), StandardCharsets.UTF_8);
+        String expected = Files.readString(SAMPLES.resolve("messy_suite.formatted.robot"), StandardCharsets.UTF_8);
+        assertEquals(expected, new RobotFormatter().format(messy));
+    }
 }

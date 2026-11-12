@@ -8,7 +8,7 @@ the inspection texts are copied verbatim from `analysis/RobotCodeAnalyzer`, so
 what the pictures show is what the plugin actually does.
 
 Usage:  python3 docs/screenshots/src/render.py
-Output: docs/screenshots/NN-name.png (2880x1800)
+Output: docs/screenshots/01..06-*.png (2880x1800)
 """
 
 import html
@@ -264,6 +264,144 @@ def shoot(name: str, document: str) -> None:
         print(f"  {name}  ({target.stat().st_size // 1024} KB)", flush=True)
 
 
+FORMAT_STYLE = """
+.split { flex: 1; display: flex; min-height: 0; }
+.pane { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.pane .tab .state { margin-left: 6px; font-size: 12px; }
+.pane .tab .state.before { color: #B35900; } .pane .tab .state.after { color: #2E7D32; }
+.pane .editor { padding-bottom: 60px; }
+.gutter-mid {
+  width: 88px; flex: none; background: #F7F8FA; border-left: 1px solid #E0E0E0;
+  border-right: 1px solid #E0E0E0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px; font-size: 11.5px; color: #6E6E6E;
+}
+.gutter-mid .arrow { color: #3574F0; font-size: 22px; }
+.tabchar { background: #FFF6D9; color: #B0A060; }
+.changed { background: #E6F4EA; }
+"""
+
+
+def render_formatter_pane(source: str, changed: set, show_tabs: bool) -> str:
+    rows = []
+    for number, line in enumerate(source.rstrip("\n").split("\n"), start=1):
+        if show_tabs and "\t" in line:
+            parts = []
+            for chunk in re.split(r"(\t)", line):
+                if chunk == "\t":
+                    parts.append('<span class="tabchar">&rarr;&nbsp;&nbsp;&nbsp;</span>')
+                elif chunk:
+                    parts.append("".join(
+                        f'<span class="{css}">{html.escape(t).replace(" ", "&nbsp;")}</span>'
+                        if css else html.escape(t).replace(" ", "&nbsp;")
+                        for t, css in tokenize(chunk, False)))
+            code = "".join(parts)
+        else:
+            code = render_code(line, {}).split('<span class="code">', 1)[1].rsplit("</span></div>", 1)[0]
+        if number in changed:
+            code = f'<span class="changed">{code}</span>'
+        rows.append(f'<div class="row"><span class="ln">{number}</span>'
+                    f'<span class="code">{code}</span></div>')
+    return "\n".join(rows)
+
+
+def formatter_page(before: str, after: str) -> str:
+    before_lines = before.rstrip("\n").split("\n")
+    after_lines = after.rstrip("\n").split("\n")
+    changed = {n for n, line in enumerate(after_lines, start=1)
+               if line and line not in before_lines}
+
+    def pane(label: str, state: str, body: str) -> str:
+        return (f'<div class="pane"><div class="tabbar"><div class="tab"><span class="fileicon"></span>'
+                f'{label}<span class="state {state}">&bull; {"before" if state == "before" else "formatted"}'
+                f'</span></div></div><div class="editor">{body}</div></div>')
+
+    return f"""<!doctype html><meta charset="utf-8"><style>{STYLE}{FORMAT_STYLE}</style>
+<div class="window">
+  <div class="titlebar"><span class="dot r"></span><span class="dot y"></span>
+    <span class="dot g"></span><span class="title">Format Robot File — Robot Framework</span></div>
+  <div class="split">
+    {pane("messy_suite.robot", "before", render_formatter_pane(before, set(), True))}
+    <div class="gutter-mid"><span class="arrow">&#9654;</span>Format<span>&#8963;&#8997;&#8679;R</span></div>
+    {pane("messy_suite.robot", "after", render_formatter_pane(after, changed, False))}
+  </div>
+  <div class="editor" style="flex:none;height:44px;padding:0">
+    <div class="caption"><b>Format Robot File</b> (<code>Ctrl+Alt+Shift+R</code>) — canonical section
+    headers, tabs expanded to the configured indent, trailing whitespace trimmed and blank-line runs
+    collapsed.</div>
+  </div>
+</div>"""
+
+
+SETTINGS_STYLE = """
+body { background: #D4D4D4; display: flex; align-items: center; justify-content: center; }
+.dialog {
+  width: 1240px; height: 760px; background: #F2F2F2; border-radius: 10px; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.30); display: flex; flex-direction: column;
+  border: 1px solid #BDBDBD;
+}
+.dialog .head { height: 44px; display: flex; align-items: center; padding: 0 18px;
+  font-size: 14px; font-weight: 600; color: #1F1F1F; background: #E8E8E8; border-bottom: 1px solid #D0D0D0; }
+.dialog .body { flex: 1; display: flex; min-height: 0; }
+.tree { width: 330px; background: #F7F7F7; border-right: 1px solid #D9D9D9; padding: 14px 0; font-size: 14px; }
+.tree div { height: 31px; display: flex; align-items: center; padding-left: 34px; color: #1F1F1F; }
+.tree div.child { padding-left: 54px; }
+.tree div.sel { background: #3574F0; color: #FFFFFF; }
+.tree .caret { width: 20px; color: #7A7A7A; font-size: 10px; margin-left: -20px; }
+.form { flex: 1; padding: 22px 30px; font-size: 14px; color: #1F1F1F; }
+.crumb { font-size: 14px; color: #6E6E6E; margin-bottom: 22px; }
+.crumb b { color: #1F1F1F; font-weight: 600; }
+.field { display: flex; align-items: center; height: 34px; margin-bottom: 12px; }
+.field label { width: 230px; flex: none; }
+.input { flex: 1; height: 30px; border: 1px solid #C4C4C4; border-radius: 4px; background: #FFFFFF;
+  padding: 0 9px; display: flex; align-items: center; font-size: 13.5px; color: #1F1F1F; }
+.input.small { flex: none; width: 90px; }
+.sep { border-top: 1px solid #D9D9D9; margin: 18px 0 14px; }
+.plain { margin-bottom: 12px; }
+.check { display: flex; align-items: center; gap: 10px; height: 32px; }
+.box { width: 17px; height: 17px; border-radius: 4px; background: #3574F0; color: #FFF;
+  font-size: 12px; display: flex; align-items: center; justify-content: center; }
+.foot { height: 62px; border-top: 1px solid #D9D9D9; display: flex; align-items: center;
+  justify-content: flex-end; gap: 12px; padding: 0 20px; }
+.btn { height: 32px; padding: 0 22px; border-radius: 5px; border: 1px solid #C4C4C4; background: #FFF;
+  font-size: 14px; display: flex; align-items: center; }
+.btn.ok { background: #3574F0; border-color: #3574F0; color: #FFF; }
+"""
+
+
+def settings_page() -> str:
+    # Mirrors RobotSettingsConfigurable.createComponent() field for field, with the
+    # defaults from RobotSettings.State (empty paths, indent 4, normalize on).
+    return f"""<!doctype html><meta charset="utf-8"><style>{STYLE}{SETTINGS_STYLE}</style>
+<div class="dialog">
+  <div class="head">Settings</div>
+  <div class="body">
+    <div class="tree">
+      <div><span class="caret">&#9656;</span>Appearance &amp; Behavior</div>
+      <div>Keymap</div>
+      <div><span class="caret">&#9656;</span>Editor</div>
+      <div><span class="caret">&#9656;</span>Version Control</div>
+      <div><span class="caret">&#9656;</span>Build, Execution, Deployment</div>
+      <div><span class="caret">&#9662;</span>Tools</div>
+      <div class="child">Terminal</div>
+      <div class="child sel">Robot Framework</div>
+      <div class="child">Server Certificates</div>
+    </div>
+    <div class="form">
+      <div class="crumb">Tools &rsaquo; <b>Robot Framework</b></div>
+      <div class="field"><label>Python interpreter path:</label><div class="input">/usr/bin/python3</div></div>
+      <div class="field"><label>Robot Framework arguments:</label><div class="input">--loglevel DEBUG</div></div>
+      <div class="field"><label>Output directory:</label><div class="input">results</div></div>
+      <div class="sep"></div>
+      <div class="plain">Formatter</div>
+      <div class="field"><label>Indent size (spaces):</label><div class="input small">4</div></div>
+      <div class="check"><span class="box">&#10003;</span>Normalize section headers
+        (e.g. *** test cases *** &rarr; *** Test Cases ***)</div>
+    </div>
+  </div>
+  <div class="foot"><div class="btn">Cancel</div><div class="btn">Apply</div><div class="btn ok">OK</div></div>
+</div>"""
+
+
 def main() -> int:
     if not Path(CHROME).exists():
         print(f"Google Chrome not found at {CHROME}", file=sys.stderr)
@@ -287,7 +425,7 @@ def main() -> int:
       <div class="hint"><b>Alt+Enter</b> &nbsp;Show quick fixes</div>
     </div>"""
     shoot("01-code-inspections.png", page(
-        "rf74_migration.robot — Robot Framework Professional",
+        "rf74_migration.robot — Robot Framework",
         render_code(migration, marks),
         stripe([(row_top(4), "#E3B341"), (row_top(5), "#E3B341"), (row_top(9), "#E55765"),
                 (row_top(10), "#E55765"), (row_top(15), "#E3B341"), (row_top(16), "#E55765")]) + tooltip,
@@ -302,7 +440,7 @@ def main() -> int:
       <div class="item"><span class="bulb">&#9881;</span>Edit inspection profile setting<span class="kind">&nbsp;</span></div>
     </div>"""
     shoot("02-quick-fixes.png", page(
-        "rf74_migration.robot — Robot Framework Professional",
+        "rf74_migration.robot — Robot Framework",
         render_code(migration, {22: "warning"}),
         stripe([(row_top(22), "#E3B341")]) + menu,
         "<b>One-click migration</b> — <code>[Return]</code> becomes the RETURN statement "
@@ -311,7 +449,7 @@ def main() -> int:
 
     # 3 — the modern syntax the plugin now understands
     shoot("05-rf74-syntax.png", page(
-        "rf74_showcase.robot — Robot Framework Professional",
+        "rf74_showcase.robot — Robot Framework",
         render_code(showcase, {}),
         '<div class="popup" style="left:820px; top:250px; width:520px;">'
         '<h4>Understood out of the box</h4>'
@@ -338,11 +476,19 @@ def main() -> int:
         "@{BROWSERS: str}       chrome    firefox\n"
     )
     shoot("06-type-completion.png", page(
-        "rf74_showcase.robot — Robot Framework Professional",
+        "rf74_showcase.robot — Robot Framework",
         render_code(typing, {}),
         completion,
         "<b>Type completion</b> — typing a colon inside a variable offers the conversion "
         "types Robot Framework 7.3 understands, including the 7.4 Secret type."))
+
+    # 3 — formatter before/after; SampleProjectTest asserts the formatted fixture
+    messy = (SAMPLES / "messy_suite.robot").read_text(encoding="utf-8")
+    formatted = (SAMPLES / "messy_suite.formatted.robot").read_text(encoding="utf-8")
+    shoot("03-formatter-before-after.png", formatter_page(messy, formatted))
+
+    # 4 — Settings > Tools > Robot Framework
+    shoot("04-settings.png", settings_page())
 
     print("Done. Upload these under Edit Plugin -> Media on the Marketplace.")
     return 0

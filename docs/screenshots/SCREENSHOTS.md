@@ -1,6 +1,6 @@
 # Screenshots & Media Guide
 
-Marketplace listing assets for the **Robot Framework Professional** plugin.
+Marketplace listing assets for the **Robot Framework** plugin.
 
 All shots are built from the sample suites in [`sample-project/`](sample-project),
 which are crafted so the advertised features light up without any extra setup.
